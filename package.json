@@ -1,0 +1,38 @@
+{
+  "name": "nanoscopic_blog",
+  "version": "0.0.1",
+  "description": "An efficient and small blogging platform.",
+  "keywords": [
+    "blog",
+    "writing",
+    "write",
+    "blogging"
+  ],
+  "homepage": "https://nanoscopic.xmrsoftware.com/",
+  "bugs": {
+    "url": "https://github.com/xmrsoftware/nanoscopic/issues",
+    "email": "bugs@nanoscopic.blog"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xmrsoftware/nanoscopic.git"
+  },
+  "main": "app.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "XMR VPS Ltd",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "cookie-parser": "^1.4.5",
+    "cookie-session": "^1.4.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-handlebars": "^5.2.1",
+    "pg-promise": "^10.9.4",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3"
+  }
+}

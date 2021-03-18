@@ -1,0 +1,5 @@
+default_version = '1.0.0'
+comment = 'Database requirements for the Nanoscopic blogging platform'
+encoding = 'en_GB.UTF8'
+superuser = false
+trusted = false
