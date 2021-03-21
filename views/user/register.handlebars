@@ -1,0 +1,25 @@
+<h1>{{title}}</h1>
+<p>
+    In order to get the best use out of this Nanoscopic website you should register an account so that you can either
+    view articles you want to read or so that you can create your own blog.
+</p>
+<p>
+    Registration is completely free and there is no obligation to spend any money at all.
+</p>
+<p>
+    <form action="/user/register/" method="post">
+        <label for="first_name">First Name (optional):</label><br/>
+        <input type="text" id="first_name" name="first_name"/><br/>
+        <label for="last_name">Last Name (optional):</label><br/>
+        <input type="text" id="last_name" name="last_name"><br/>
+        <label for="username">Username:</label><br/>
+        <input type="text" id="username" name="username" required><br/>
+        <label for="email">Email Address:</label><br/>
+        <input type="email" id="email" name="email" required><br/>
+        <label for="password">Password:</label><br/>
+        <input type="password" id="password" name="password" required><br/>
+        <label for="password_confirm">Confirm Password:</label><br/>
+        <input type="password" id="password_confirm" name="password_confirm" required/><br/>
+        <input type="submit" id="register_submit" name="register_submit" value="Register"/>
+    </form>
+</p>

@@ -19,7 +19,7 @@
 const express = require('express')
 const hbs = require('express-handlebars')
 const cookie_session = require('cookie-session')
-const user = require('./user')
+const nano_user = require('./routes/user/user')
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
 }
@@ -48,6 +48,9 @@ app.set('view engine', 'handlebars')
 // the view cache is only used when Node is in production mode
 app.enable('view cache')
 
+// load view modules
+app.use('/user/', nano_user)
+
 app.get('/', (req, res) => {
     res.render('home', {
         title: 'Nanoscopic - The small, efficient and ultra flexible open source blogging platform.',
@@ -58,11 +61,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/:pageTitle/:pageID/', (req, res) => {
-    res.render('contact', {
-    })
 })
-
-app.use('/user/', user)
 
 app.listen(port, () => {
     console.log(`nanoscopic_main_website listening on ${port}`)

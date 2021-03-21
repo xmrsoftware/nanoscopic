@@ -29,17 +29,17 @@
     {{/if}}
 </head>
 <body>
-<div class="grid_container">
-    <div class="grid_header_content">
-        {{> header}}
+    <div class="grid_container">
+        <div class="grid_header_content">
+            {{> header}}
+        </div>
+        <div class="grid_main_content">
+            {{{body}}}
+        </div>
+        <div class="grid_footer_content">
+            {{> footer}}
+        </div>
     </div>
-    <div class="grid_main_content">
-        {{{body}}}
-    </div>
-    <div class="grid_footer_content">
-        {{> footer}}
-    </div>
-</div>
-<script async src="/static/js/main.client.js?v=0.0.1"></script>
+    <script async src="/static/js/main.client.js?v=0.0.1"></script>
 </body>
 </html>

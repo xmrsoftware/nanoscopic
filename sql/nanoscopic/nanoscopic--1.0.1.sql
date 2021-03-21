@@ -41,7 +41,7 @@ CREATE OR REPLACE FUNCTION get_username_by_userid (IN _user_id BIGINT, OUT usern
         SELECT blog_user_username AS username FROM blog_user WHERE blog_user_id = _user_id
     $$ LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION get_latest_ten_blog_posts(IN _blog_id BIGINT)
+CREATE OR REPLACE FUNCTION get_latest_ten_blog_posts (IN _blog_id BIGINT)
     RETURNS TABLE (_user_id BIGINT, _title TEXT, _content TEXT, _published TIMESTAMPTZ, _updated TIMESTAMPTZ) AS $$
         SELECT blog_user_id, blog_post_title, blog_post_content, blog_post_published, blog_post_updated FROM blog_post
         WHERE blog_id = _blog_id ORDER BY blog_post_published DESC LIMIT 10

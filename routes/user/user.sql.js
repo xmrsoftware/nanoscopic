@@ -16,13 +16,21 @@
    limitations under the License.
 */
 
-const pg = require('./sql')
+const pg = require('./../../sql')
+const user_hash = require('./user_hashing')
 
 const db = pg.get_database_connection()
 
 async function create_user_object(username, email, password, salt) {
-    const sql = "CALL create_blog_user($1, $2, $3, $4)"
-    await db.none(sql, [username, email, password, salt])
+    const salted_password = user_hash.hash_new_password(password, salt)
+    const sql = "CALL create_blog_user ($1, $2, $3, $4);"
+    return await db.none(sql, [username, email, salted_password, salt])
+}
+
+async function check_user_password(username) {
+    const sql = 'CALL get_salt_password_by_username ($1);'
+    return await db.one(sql, [username])
 }
 
 exports.create_user_object = create_user_object
+exports.check_user_password = check_user_password
