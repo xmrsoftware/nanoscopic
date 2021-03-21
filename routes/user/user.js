@@ -47,15 +47,24 @@ router.post('/register/', (req, res) => {
 })
 
 router.get('/register/success/', (req, res) => {
-
+    res.render('user/register_success', {
+        title: 'You have successfully registered a Nanoscopic blog account',
+        meta_desc: 'You have successfully registered a Nanoscopic blog account.'
+    })
 })
 
 router.get('/register/fail/', (req, res) => {
-
+    res.render('user/register_fail', {
+        title: 'There has been an error while registering your Nanoscopic blog account',
+        meta_desc: 'There has been an error while registering your Nanoscopic blog account.'
+    })
 })
 
 router.get('/login/', (req, res) => {
-
+    res.render('user/login', {
+        title: 'Login to your Nanoscopic blog account',
+        meta_desc: 'Login to your Nanoscopic blog account.'
+    })
 })
 
 router.post('/login/', (req, res) => {
