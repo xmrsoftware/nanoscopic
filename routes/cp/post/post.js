@@ -20,7 +20,7 @@ const express = require('express')
 const router = express().router
 
 router.get('/blog/post/new/', function (req, res) {
-    res.render('cp_new_blog_post', {
+    res.render('cp/post/cp_new_blog_post', {
         title: 'Create a new blog post',
         meta_desc: 'Create a new blog post',
         form: true,
@@ -34,7 +34,7 @@ router.post('/blog/post/new/', function (req, res) {
 })
 
 router.get('/blog/post/new/success/', function (req, res) {
-    res.render('cp_new_blog_post_published', {
+    res.render('cp/post/cp_new_blog_post_published', {
         title: 'You have successfully published your blog post',
         meta_desc: 'You have successfully published your blog post.',
         layout: 'cp'

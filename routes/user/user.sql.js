@@ -16,27 +16,13 @@
    limitations under the License.
 */
 
-const express = require('express')
-const router = express().router
+const pg = require('./sql')
 
-router.get('/register/', function (req, res) {
+const db = pg.get_database_connection()
 
-})
+async function create_user_object(username, email, password, salt) {
+    const sql = "CALL create_blog_user($1, $2, $3, $4)"
+    await db.none(sql, [username, email, password, salt])
+}
 
-router.post('/register/', function (req, res) {
-
-})
-
-router.get('/login/', function (req, res) {
-
-})
-
-router.post('/login/', function (req, res) {
-
-})
-
-router.get('/logout/', function (req, res) {
-
-})
-
-module.exports = router
+exports.create_user_object = create_user_object
