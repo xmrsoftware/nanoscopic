@@ -2,12 +2,14 @@
 <p>
     Please login to your Nanoscopic account to access the full range of features that the site offers to users.
 </p>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <p>
     <form action="/user/login/" method="post">
         <label for="username">Username:</label><br/>
         <input type="text" id="username" name="username" required><br/>
         <label for="password">Password:</label><br/>
         <input type="password" id="password" name="password" required><br/>
+        <div class="g-recaptcha" data-sitekey="6LdxGYoaAAAAAFwUjlDYpN7i4RtGKVGf8Sl3gWwX"></div>
         <input type="submit" id="user_login" name="user_login" value="Login">
     </form>
 </p>

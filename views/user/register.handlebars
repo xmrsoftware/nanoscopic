@@ -6,6 +6,7 @@
 <p>
     Registration is completely free and there is no obligation to spend any money at all.
 </p>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <p>
     <form action="/user/register/" method="post">
         <label for="first_name">First Name (optional):</label><br/>
@@ -20,6 +21,7 @@
         <input type="password" id="password" name="password" required><br/>
         <label for="password_confirm">Confirm Password:</label><br/>
         <input type="password" id="password_confirm" name="password_confirm" required/><br/>
+        <div class="g-recaptcha" data-sitekey="6LdxGYoaAAAAAFwUjlDYpN7i4RtGKVGf8Sl3gWwX"></div>
         <input type="submit" id="register_submit" name="register_submit" value="Register"/>
     </form>
 </p>

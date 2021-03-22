@@ -20,6 +20,7 @@ const express = require('express')
 const hbs = require('express-handlebars')
 const cookie_session = require('cookie-session')
 const nano_user = require('./routes/user/user')
+const cp_blog = require('./routes/cp/blog/blog')
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
 }
@@ -48,8 +49,9 @@ app.set('view engine', 'handlebars')
 // the view cache is only used when Node is in production mode
 app.enable('view cache')
 
-// load view modules
+// load route modules
 app.use('/user/', nano_user)
+app.use('/cp/blog/', cp_blog)
 
 app.get('/', (req, res) => {
     res.render('home', {
@@ -58,9 +60,6 @@ app.get('/', (req, res) => {
             'charge what they want for their content so they do not have to rely on advertising or other forms of ' +
             'revenue generation.'
     })
-})
-
-app.get('/:pageTitle/:pageID/', (req, res) => {
 })
 
 app.listen(port, () => {

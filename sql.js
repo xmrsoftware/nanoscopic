@@ -35,4 +35,10 @@ function get_database_connection() {
     return db
 }
 
+async function get_user_id(username) {
+    const sql = 'CALL get_user_id_by_username ($1);'
+    return await db.one(sql, [username])
+}
+
 exports.get_database_connection = get_database_connection
+exports.get_user_id = get_user_id

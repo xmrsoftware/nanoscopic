@@ -1,0 +1,10 @@
+<h1>{{title}}</h1>
+<p>
+    <form action="/cp/blog/create/" method="post">
+        <label for="title">Blog Title:</label><br/>
+        <input type="text" name="title" id="title" required><br/>
+        <label for="description">Blog Description:</label><br/>
+        <textarea name="description" id="description" required></textarea><br/>
+        <input type="submit" id="create_blog_submit" value="Create Blog">
+    </form>
+</p>
