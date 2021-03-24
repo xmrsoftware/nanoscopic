@@ -16,13 +16,32 @@
    limitations under the License.
 */
 
+const md = require('markdown-it')()
 const pg = require('./../../../sql')
 
 const db = pg.get_database_connection()
 
 async function create_blog(username, name, description) {
     const sql = 'CALL create_blog ($1, $2, $3);'
-    return await db.none(sql, [pg.get_user_id(username), name, description])
+    return await db.none(sql, [pg.get_user_id(username), md.render(name), md.render(description)])
+}
+
+async function delete_blog(blog_id) {
+    const sql = 'CALL delete_blog ($1);'
+    return await db.none(sql, [blog_id])
+}
+
+async function update_blog(blog_id, name, description) {
+    const sql = 'CALL update_blog function ($1, $2, $3);'
+    return await db.none(sql, [blog_id, md.render(name), md.render(description)])
+}
+
+async function list_blogs(blog_user_id) {
+    const sql = 'CALL get_all_user_blogs ($1);'
+    return await db.manyOrNone(sql, [blog_user_id])
 }
 
 exports.create_blog = create_blog
+exports.delete_blog = delete_blog
+exports.update_blog = update_blog
+exports.list_blogs = list_blogs
