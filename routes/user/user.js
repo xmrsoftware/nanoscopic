@@ -41,6 +41,7 @@ router.post('/register/', (req, res) => {
     user_sql.create_user_object(req.body.username, req.body.email, req.body.password, uuid.v4()).then(result => {
         req.session.username = req.body.username
         req.session.user_id = pg.get_user_id(req.body.username)
+        req.session.logged_in = true
         res.redirect('/user/register/success/')
     }).catch(error => {
         console.debug('Error creating new user ' + error.toString())
@@ -75,6 +76,7 @@ router.post('/login/', (req, res) => {
         if (user_password_true) {
             req.session.username = req.body.username
             req.session.user_id = pg.get_user_id(req.body.username)
+            req.session.logged_in = true
             res.redirect('/user/login/succeed/')
         }
     }).catch(error => {
