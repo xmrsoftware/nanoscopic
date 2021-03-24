@@ -21,6 +21,7 @@ const express = require('express')
 const router = express.Router()
 const user_sql = require('./user.sql')
 const user_hash = require('./user_hashing')
+const pg = require('./../../sql')
 
 router.get('/register/', (req, res) => {
     res.render('user/register', {
@@ -39,6 +40,7 @@ router.post('/register/', (req, res) => {
 
     user_sql.create_user_object(req.body.username, req.body.email, req.body.password, uuid.v4()).then(result => {
         req.session.username = req.body.username
+        req.session.user_id = pg.get_user_id(req.body.username)
         res.redirect('/user/register/success/')
     }).catch(error => {
         console.debug('Error creating new user ' + error.toString())
@@ -72,6 +74,7 @@ router.post('/login/', (req, res) => {
         const user_password_true = user_hash.check_password_hash(req.body.password, salted_password)
         if (user_password_true) {
             req.session.username = req.body.username
+            req.session.user_id = pg.get_user_id(req.body.username)
             res.redirect('/user/login/succeed/')
         }
     }).catch(error => {
