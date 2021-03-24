@@ -15,5 +15,5 @@
 */
 
 CREATE OR REPLACE FUNCTION get_user_id_by_username (IN _username TEXT, OUT _user_id BIGINT) RETURNS BIGINT AS
-    'SELECT blog_user_id FROM blog_user WHERE blog_user_username = _username;'
-    LANGUAGE SQL
+    'SELECT blog_user_id AS _user_id FROM blog_user WHERE blog_user_username = _username;'
+    LANGUAGE SQL;
