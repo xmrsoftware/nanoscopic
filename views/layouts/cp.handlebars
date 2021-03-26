@@ -13,3 +13,33 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{{title}}</title>
+    <meta name="author" content="{{author}}">
+    <meta name="description" content="{{meta_desc}}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="/static/css/normalize.css">
+    <link rel="stylesheet" href="/static/css/main.css?v=0.0.1">
+    {{#if form_css}}
+        {{> form_css}}
+    {{/if}}
+</head>
+<body>
+<div class="grid_container">
+    <div class="grid_header_content">
+        {{> header}}
+    </div>
+    <div class="grid_main_content">
+        {{{body}}}
+    </div>
+    <div class="grid_footer_content">
+        {{> footer}}
+    </div>
+</div>
+<script async src="/static/js/main.client.js?v=0.0.1"></script>
+</body>
+</html>
