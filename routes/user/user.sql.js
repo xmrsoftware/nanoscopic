@@ -17,17 +17,9 @@
 */
 
 const user_hash = require('./user_hashing')
-const pgp = require('pg-promise')()
+const pg = require('./../../../sql')
 
-const cn = {
-    host: process.env.NANOSCOPIC_POSTGRES_SERVER,
-    port: process.env.NANOSCOPIC_POSTGRES_PORT,
-    database: process.env.NANOSCOPIC_POSTGRES_DATABASE,
-    user: process.env.NANODCOPIC_POSTGRES_USER,
-    password: process.env.NANOSCOPIC_POSTGRES_PASSWORD
-}
-
-const db = pgp(cn)
+const db = pg.get_database_connection()
 
 async function get_user_salt(username) {
     const sql = 'CALL get_user_salt ($1);'
