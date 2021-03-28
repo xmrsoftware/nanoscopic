@@ -24,7 +24,7 @@ function hash_new_password(password, salt) {
     return hash.digest('hex')
 }
 
-function check_password_hash(password, db_salted_password) {
+function check_password_hash(password, db_salted_password, salt) {
     let hash = crypto.createHmac('sha512', salt)
     hash.update(password)
     const salted_password = hash.digest('hex')
