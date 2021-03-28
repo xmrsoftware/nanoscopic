@@ -17,9 +17,17 @@
 */
 
 const md = require('markdown-it')()
-const pg = require('./../../../sql')
+const pgp = require('pg-promise')()
 
-const db = pg.get_database_connection()
+const cn = {
+    host: process.env.NANOSCOPIC_POSTGRES_SERVER,
+    port: process.env.NANOSCOPIC_POSTGRES_PORT,
+    database: process.env.NANOSCOPIC_POSTGRES_DATABASE,
+    user: process.env.NANODCOPIC_POSTGRES_USER,
+    password: process.env.NANOSCOPIC_POSTGRES_PASSWORD
+}
+
+const db = pgp(cn)
 
 async function create_blog(blog_user_id, name, description) {
     const sql = 'CALL create_blog ($1, $2, $3);'
