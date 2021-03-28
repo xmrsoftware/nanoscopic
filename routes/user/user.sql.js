@@ -16,10 +16,23 @@
    limitations under the License.
 */
 
-const pg = require('./../../sql')
 const user_hash = require('./user_hashing')
+const pgp = require('pg-promise')()
 
-const db = pg.get_database_connection()
+const cn = {
+    host: process.env.NANOSCOPIC_POSTGRES_SERVER,
+    port: process.env.NANOSCOPIC_POSTGRES_PORT,
+    database: process.env.NANOSCOPIC_POSTGRES_DATABASE,
+    user: process.env.NANODCOPIC_POSTGRES_USER,
+    password: process.env.NANOSCOPIC_POSTGRES_PASSWORD
+}
+
+const db = pgp(cn)
+
+async function get_user_salt(username) {
+    const sql = 'CALL get_user_salt ($1);'
+    return await db.oneOrNone(sql, [username])
+}
 
 async function create_user_object(username, email, password, salt) {
     const salted_password = user_hash.hash_new_password(password, salt)
@@ -32,5 +45,12 @@ async function check_user_password(username) {
     return await db.one(sql, [username])
 }
 
+async function get_user_id(username) {
+    const sql = 'CALL get_user_id_by_username ($1);'
+    return await db.one(sql, [username])
+}
+
 exports.create_user_object = create_user_object
 exports.check_user_password = check_user_password
+exports.get_user_salt = get_user_salt
+exports.get_user_id = get_user_id
