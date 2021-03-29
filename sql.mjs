@@ -1,7 +1,13 @@
 'use strict';
 
+import process from 'node:process'
 import pgPromise from 'pg-promise'
+import dotenv from "dotenv";
+
 const pgp = pgPromise({})
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config()
+}
 
 const cn = {
     host: process.env.NANOSCOPIC_POSTGRES_SERVER,
