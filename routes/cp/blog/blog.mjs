@@ -16,13 +16,14 @@
    limitations under the License.
 */
 
-const express = require('express')
+import express from 'express'
+import { create_blog, list_blogs, update_blog, delete_blog, get_blog } from './blog.sql.mjs';
+import { check_if_logged_in } from './../../../utils.mjs'
+
 const router = express.Router()
-const blog_sql = require('./blog.sql')
-const permission_status = require('./../../../utils')
 
 router.get('/blog/create/', (req, res) => {
-    permission_status.check_if_logged_in(req, res)
+    check_if_logged_in(req, res)
 
     res.render('cp/blog/cp_new_blog', {
         title: 'Create a new Nanoscopic blog',
@@ -34,9 +35,9 @@ router.get('/blog/create/', (req, res) => {
 })
 
 router.post('/blog/create/', (req, res) => {
-    permission_status.check_if_logged_in(req, res)
+    check_if_logged_in(req, res)
 
-    blog_sql.create_blog(req.session.user_id, req.body.title, req.body.description)
+    create_blog(req.session.user_id, req.body.title, req.body.description)
         .then(() => {
             res.redirect('/cp/blog/list/all/')
         }).catch(error => {
@@ -46,7 +47,7 @@ router.post('/blog/create/', (req, res) => {
 })
 
 router.get('/blog/create/fail/', (req, res) => {
-    permission_status.check_if_logged_in(req, res)
+    check_if_logged_in(req, res)
 
     res.render('cp/blog/cp_new_blog_fail', {
         title: 'Your attempt to create a new blog failed',
@@ -57,9 +58,9 @@ router.get('/blog/create/fail/', (req, res) => {
 })
 
 router.get('/blog/delete/:blogID/confirm/', (req, res) => {
-    permission_status.check_if_logged_in()
+    check_if_logged_in()
 
-    const blog = blog_sql.get_blog(req.params.blogID, req.session.user_id)
+    const blog = get_blog(req.params.blogID, req.session.user_id)
 
     res.render('cp/blog/cp_delete_blog_confirm', {
         title: 'Are you sure you wish to delete the blog called ' + blog.name + '?',
@@ -72,17 +73,17 @@ router.get('/blog/delete/:blogID/confirm/', (req, res) => {
 })
 
 router.post('/blog/delete/:blogID/confirm/', (req, res) => {
-    permission_status.check_if_logged_in()
+    check_if_logged_in()
 
-    const blog = blog_sql.get_blog(req.params.blogID, req.session.user_id)
+    const blog = get_blog(req.params.blogID, req.session.user_id)
 
     res.redirect('/cp/blog/delete/' + blog.blog_id + '/')
 })
 
 router.post('/blog/delete/:blogID/', (req, res) => {
-    permission_status.check_if_logged_in(req, res)
+    check_if_logged_in(req, res)
 
-    blog_sql.delete_blog(req.params.blogID, req.session.user_id)
+    delete_blog(req.params.blogID, req.session.user_id)
         .then(result => {
             res.redirect('/')
         }).catch(error => {
@@ -92,7 +93,7 @@ router.post('/blog/delete/:blogID/', (req, res) => {
 })
 
 router.get('/blog/delete/fail/', (req, res) => {
-    permission_status.check_if_logged_in(req, res)
+    check_if_logged_in(req, res)
 
     res.render('cp/blog/cp_delete_blog_fail', {
         title: 'There has been an error when deleting your blog',
@@ -103,7 +104,7 @@ router.get('/blog/delete/fail/', (req, res) => {
 })
 
 router.get('/blog/update/:blogID/', (req, res) => {
-    permission_status.check_if_logged_in()
+    check_if_logged_in()
 
     res.render('cp/blog/cp_update_blog', {
         title: 'Update your blog',
@@ -115,9 +116,9 @@ router.get('/blog/update/:blogID/', (req, res) => {
 })
 
 router.post('/blog/update/:blogID/', (req, res) => {
-    permission_status.check_if_logged_in(req, res)
+    check_if_logged_in(req, res)
 
-    blog_sql.update_blog(req.params.blogID, req.session.user_id, req.body.name, req.body.description)
+    update_blog(req.params.blogID, req.session.user_id, req.body.name, req.body.description)
         .then(result => {
             console.log(result)
         }).catch(error => {
@@ -127,7 +128,7 @@ router.post('/blog/update/:blogID/', (req, res) => {
 })
 
 router.get('/blog/update/fail/', (req, res) => {
-    permission_status.check_if_logged_in()
+    check_if_logged_in()
 
     res.render('cp/blog/cp_update_blog_fail', {
         title: 'There was an error updating your blog',
@@ -138,9 +139,9 @@ router.get('/blog/update/fail/', (req, res) => {
 })
 
 router.get('/blog/list/all/', (req, res) => {
-    permission_status.check_if_logged_in(req, res)
+    check_if_logged_in(req, res)
 
-    blog_sql.list_blogs(req.session.user_id)
+    list_blogs(req.session.user_id)
         .then(result => {
             console.log(result)
         }).catch(error => {
@@ -148,4 +149,4 @@ router.get('/blog/list/all/', (req, res) => {
     })
 })
 
-module.exports = router
+export {router}

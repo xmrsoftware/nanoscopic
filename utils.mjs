@@ -6,4 +6,4 @@ function check_if_logged_in(req, res) {
     }
 }
 
-exports.check_if_logged_in = check_if_logged_in
+export {check_if_logged_in}

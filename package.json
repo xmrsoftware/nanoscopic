@@ -17,7 +17,7 @@
     "type": "git",
     "url": "https://github.com/xmrsoftware/nanoscopic.git"
   },
-  "main": "app.js",
+  "main": "app.mjs",
   "scripts": {
     "test": "jest"
   },

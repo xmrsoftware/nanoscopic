@@ -16,14 +16,14 @@
    limitations under the License.
 */
 
-const md = require('markdown-it')()
-const pg = require('./../../../sql')
+import markdown from 'markdown-it'
+import { db } from './../../../sql.mjs'
 
-const db = pg.get_database_connection()
+const { render } = markdown
 
 async function create_blog(blog_user_id, name, description) {
     const sql = 'CALL create_blog ($1, $2, $3);'
-    return await db.none(sql, [blog_user_id, md.render(name), md.render(description)])
+    return await db.none(sql, [blog_user_id, render(name), render(description)])
 }
 
 async function get_blog(blog_id, blog_user_id) {
@@ -38,7 +38,7 @@ async function delete_blog(blog_id, blog_user_id) {
 
 async function update_blog(blog_id, blog_user_id, name, description) {
     const sql = 'CALL update_blog function ($1, $2, $3, $4);'
-    return await db.none(sql, [blog_id, blog_user_id, md.render(name), md.render(description)])
+    return await db.none(sql, [blog_id, blog_user_id, render(name), render(description)])
 }
 
 async function list_blogs(blog_user_id) {
@@ -46,8 +46,4 @@ async function list_blogs(blog_user_id) {
     return await db.manyOrNone(sql, [blog_user_id])
 }
 
-exports.create_blog = create_blog
-exports.get_blog = get_blog
-exports.delete_blog = delete_blog
-exports.update_blog = update_blog
-exports.list_blogs = list_blogs
+export {create_blog, get_blog, delete_blog, update_blog, list_blogs}

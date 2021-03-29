@@ -16,14 +16,18 @@
    limitations under the License.
 */
 
-const express = require('express')
-const hbs = require('express-handlebars')
-const cookie_session = require('cookie-session')
-const nano_user = require('./routes/user/user')
-const cp_blog = require('./routes/cp/blog/blog')
+import { readdirSync } from 'fs'
+import express from 'express'
+import hbs from 'express-handlebars'
+import cookie_session from 'cookie-session'
+import dotenv from 'dotenv'
+import { router as user_routes } from './routes/user/user.mjs'
+import { router as cp_blog_routes } from "./routes/cp/blog/blog.mjs";
+
 if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config();
+    dotenv.config()
 }
+
 const app = express()
 const port = process.env.NANOSCOPIC_EXPRESS_JS_APP_PORT
 const cookie_secure = process.env.NODE_ENV === 'production';
@@ -39,7 +43,8 @@ app.use(cookie_session({
     sameSite: true,
     signed: true
 }))
-app.use('/static', express.static(__dirname + '/public'))
+const public_static_files = readdirSync(new URL('./public', import.meta.url));
+app.use('/static', express.static(public_static_files + '/public'))
 app.use(express.json())
 app.use(express.urlencoded({
     extended: true
@@ -50,8 +55,8 @@ app.set('view engine', 'handlebars')
 app.enable('view cache')
 
 // load route modules
-app.use('/user/', nano_user)
-app.use('/cp/blog/', cp_blog)
+app.use('/user/', user_routes)
+app.use('/cp/blog/', cp_blog_routes)
 
 app.get('/', (req, res) => {
     res.render('home', {

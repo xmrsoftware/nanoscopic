@@ -16,11 +16,12 @@
    limitations under the License.
 */
 
-const uuid = require('uuid')
-const express = require('express')
+import { v4 } from 'uuid'
+import express from 'express'
+import { create_user_object, get_user_id, check_user_password, get_user_salt } from './user.sql.mjs';
+import { check_password_hash } from './user_hashing.mjs'
+
 const router = express.Router()
-const user_sql = require('./user.sql')
-const user_hash = require('./user_hashing')
 
 router.get('/register/', (req, res) => {
     res.render('user/register', {
@@ -37,9 +38,9 @@ router.post('/register/', (req, res) => {
         res.redirect('/user/register/fail/')
     }
 
-    user_sql.create_user_object(req.body.username, req.body.email, req.body.password, uuid.v4()).then(result => {
+    create_user_object(req.body.username, req.body.email, req.body.password, v4()).then(result => {
         req.session.username = req.body.username
-        req.session.user_id = user_sql.get_user_id(req.body.username)
+        req.session.user_id = get_user_id(req.body.username)
         req.session.logged_in = true
         res.redirect('/user/register/success/')
     }).catch(error => {
@@ -70,12 +71,12 @@ router.get('/login/', (req, res) => {
 })
 
 router.post('/login/', (req, res) => {
-    const salted_password = user_sql.check_user_password(req.body.username).then(result => {
-        const user_password_true = user_hash.check_password_hash(req.body.password, salted_password,
-            user_sql.get_user_salt(req.body.username))
+    const salted_password = check_user_password(req.body.username).then(result => {
+        const user_password_true = check_password_hash(req.body.password, salted_password,
+            get_user_salt(req.body.username))
         if (user_password_true) {
             req.session.username = req.body.username
-            req.session.user_id = pg.get_user_id(req.body.username)
+            req.session.user_id = get_user_id(req.body.username)
             req.session.logged_in = true
             res.redirect('/user/login/succeed/')
         }
@@ -100,4 +101,4 @@ router.get('/logout/', (req, res) => {
     })
 })
 
-module.exports = router
+export {router}

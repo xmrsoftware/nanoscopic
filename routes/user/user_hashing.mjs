@@ -16,20 +16,19 @@
    limitations under the License.
 */
 
-const crypto = require('crypto')
+import { createHmac } from 'crypto'
 
 function hash_new_password(password, salt) {
-    let hash = crypto.createHmac('sha512', salt)
+    let hash = createHmac('sha512', salt)
     hash.update(password)
     return hash.digest('hex')
 }
 
 function check_password_hash(password, db_salted_password, salt) {
-    let hash = crypto.createHmac('sha512', salt)
+    let hash = createHmac('sha512', salt)
     hash.update(password)
     const salted_password = hash.digest('hex')
     return db_salted_password === salted_password;
 }
 
-exports.hash_new_password = hash_new_password
-exports.check_password_hash = check_password_hash
+export {hash_new_password, check_password_hash}
