@@ -58,7 +58,7 @@ router.get('/blog/create/fail/', (req, res) => {
 })
 
 router.get('/blog/delete/:blogID/confirm/', (req, res) => {
-    check_if_logged_in()
+    check_if_logged_in(req, res)
 
     const blog = get_blog(req.params.blogID, req.session.user_id)
 
@@ -73,7 +73,7 @@ router.get('/blog/delete/:blogID/confirm/', (req, res) => {
 })
 
 router.post('/blog/delete/:blogID/confirm/', (req, res) => {
-    check_if_logged_in()
+    check_if_logged_in(req, res)
 
     const blog = get_blog(req.params.blogID, req.session.user_id)
 
@@ -104,7 +104,7 @@ router.get('/blog/delete/fail/', (req, res) => {
 })
 
 router.get('/blog/update/:blogID/', (req, res) => {
-    check_if_logged_in()
+    check_if_logged_in(req, res)
 
     res.render('cp/blog/cp_update_blog', {
         title: 'Update your blog',
@@ -128,7 +128,7 @@ router.post('/blog/update/:blogID/', (req, res) => {
 })
 
 router.get('/blog/update/fail/', (req, res) => {
-    check_if_logged_in()
+    check_if_logged_in(req, res)
 
     res.render('cp/blog/cp_update_blog_fail', {
         title: 'There was an error updating your blog',
