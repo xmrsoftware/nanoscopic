@@ -28,7 +28,8 @@ router.get('/register/', (req, res) => {
         title: 'Register a Nanoscopic Blog Account',
         meta_desc: 'Register a Nanoscopic account so that you can comment and read all the blog posts contained on ' +
             'this blogging platform.',
-        form_css: true
+        form_css: true,
+        logged_in: req.session.logged_in
     })
 })
 
@@ -52,21 +53,24 @@ router.post('/register/', (req, res) => {
 router.get('/register/success/', (req, res) => {
     res.render('user/register_success', {
         title: 'You have successfully registered a Nanoscopic blog account',
-        meta_desc: 'You have successfully registered a Nanoscopic blog account.'
+        meta_desc: 'You have successfully registered a Nanoscopic blog account.',
+        logged_in: req.session.logged_in
     })
 })
 
 router.get('/register/fail/', (req, res) => {
     res.render('user/register_fail', {
         title: 'There has been an error while registering your Nanoscopic blog account',
-        meta_desc: 'There has been an error while registering your Nanoscopic blog account.'
+        meta_desc: 'There has been an error while registering your Nanoscopic blog account.',
+        logged_in: req.session.logged_in
     })
 })
 
 router.get('/login/', (req, res) => {
     res.render('user/login', {
         title: 'Login to your Nanoscopic blog account',
-        meta_desc: 'Login to your Nanoscopic blog account.'
+        meta_desc: 'Login to your Nanoscopic blog account.',
+        logged_in: req.session.logged_in
     })
 })
 
@@ -89,7 +93,8 @@ router.post('/login/', (req, res) => {
 router.get('/login/fail/', (req, res) => {
     res.render('user/login_fail', {
         title: 'You have failed to login to your Nanoscopic account',
-        meta_desc: 'You have failed to login to your Nanoscopic account.'
+        meta_desc: 'You have failed to login to your Nanoscopic account.',
+        logged_in: req.session.logged_in
     })
 })
 

@@ -63,7 +63,8 @@ app.get('/', (req, res) => {
         title: 'Nanoscopic - The small, efficient and ultra flexible open source blogging platform.',
         meta_desc: 'Nanoscopic is a small and efficient blogging platform that is designed to allow bloggers to ' +
             'charge what they want for their content so they do not have to rely on advertising or other forms of ' +
-            'revenue generation.'
+            'revenue generation.',
+        logged_in: req.session.logged_in
     })
 })
 
