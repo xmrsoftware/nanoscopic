@@ -18,7 +18,8 @@
 
 import { v4 } from 'uuid'
 import express from 'express'
-import { create_user_object, get_user_id, check_user_password, get_user_salt } from './user.sql.mjs';
+import { create_user_object, get_user_id, check_user_password, get_user_salt, add_user_permissions } from
+        './user.sql.mjs'
 import { check_password_hash } from './user_hashing.mjs'
 
 const router = express.Router()
@@ -43,6 +44,11 @@ router.post('/register/', (req, res) => {
         req.session.username = req.body.username
         req.session.user_id = get_user_id(req.body.username)
         req.session.logged_in = true
+        add_user_permissions(req.session.user_id).then(result => {
+        }).catch(error => {
+            console.debug('Error adding user permissions ' + error.toString())
+            res.redirect('/user/register/fail/')
+        })
         res.redirect('/user/register/success/')
     }).catch(error => {
         console.debug('Error creating new user ' + error.toString())

@@ -40,4 +40,9 @@ async function get_user_id(username) {
     return await db.one(sql, [username])
 }
 
-export {get_user_salt, create_user_object, check_user_password, get_user_id}
+async function add_user_permissions(user_id) {
+    const sql = 'CALL add_user_permissions ($1);'
+    return await db.none(sql, [user_id])
+}
+
+export {get_user_salt, create_user_object, check_user_password, get_user_id, add_user_permissions}
