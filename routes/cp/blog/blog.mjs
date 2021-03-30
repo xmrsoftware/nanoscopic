@@ -147,6 +147,7 @@ router.get('/blog/list/all/', (req, res) => {
         }).catch(error => {
             console.debug('Unable to retrieve list of blogs for user: ' + req.session.username + ' ' + error)
     })
+    // TODO: Render template
 })
 
 export {router}
