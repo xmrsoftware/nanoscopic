@@ -15,3 +15,21 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+
+import express from 'express'
+import { check_if_logged_in } from "../../utils.mjs";
+
+const router = express.Router()
+
+router.get('/', function (req, res) {
+    check_if_logged_in(req, res)
+
+    res.render('cp/cp_home', {
+        title: 'Nanoscopic Control Panel Home',
+        meta_desc: 'The Nanoscopic Control Panel Home.',
+        layout: 'cp',
+        logged_in: req.session.logged_in
+    })
+})
+
+export {router}

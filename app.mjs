@@ -22,6 +22,7 @@ import hbs from 'express-handlebars'
 import cookie_session from 'cookie-session'
 import dotenv from 'dotenv'
 import { router as user_routes } from './routes/user/user.mjs'
+import { router as cp_home } from './routes/cp/home.mjs'
 import { router as cp_blog_routes } from "./routes/cp/blog/blog.mjs";
 
 if (process.env.NODE_ENV !== 'production') {
@@ -56,6 +57,7 @@ app.enable('view cache')
 
 // load route modules
 app.use('/user/', user_routes)
+app.use('/cp/', cp_home)
 app.use('/cp/blog/', cp_blog_routes)
 
 app.get('/', (req, res) => {
