@@ -20,23 +20,23 @@ import { hash_new_password } from './user_hashing.mjs';
 import { db } from '../../sql.mjs'
 
 async function get_user_salt(username) {
-    const sql = 'CALL get_user_salt ($1);'
+    const sql = 'SELECT get_user_salt ($1);'
     return await db.oneOrNone(sql, [username])
 }
 
 async function create_user_object(username, email, password, salt) {
     const salted_password = hash_new_password(password, salt)
-    const sql = "CALL create_blog_user ($1, $2, $3, $4);"
+    const sql = 'CALL create_blog_user ($1, $2, $3, $4);'
     return await db.none(sql, [username, email, salted_password, salt])
 }
 
 async function check_user_password(username) {
-    const sql = 'CALL get_salt_password_by_username ($1);'
+    const sql = 'SELECT get_salt_password_by_username ($1);'
     return await db.one(sql, [username])
 }
 
 async function get_user_id(username) {
-    const sql = 'CALL get_user_id_by_username ($1);'
+    const sql = 'SELECT get_user_id_by_username ($1);'
     return await db.one(sql, [username])
 }
 

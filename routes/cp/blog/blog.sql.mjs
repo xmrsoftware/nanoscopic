@@ -27,7 +27,7 @@ async function create_blog(blog_user_id, name, description) {
 }
 
 async function get_blog(blog_id, blog_user_id) {
-    const sql = 'CALL get_blog ($1, $2);'
+    const sql = 'SELECT get_blog ($1, $2);'
     return await db.oneOrNone(sql, [blog_id, blog_user_id])
 }
 
@@ -42,7 +42,7 @@ async function update_blog(blog_id, blog_user_id, name, description) {
 }
 
 async function list_blogs(blog_user_id) {
-    const sql = 'CALL get_all_user_blogs ($1);'
+    const sql = 'SELECT get_all_user_blogs ($1);'
     return await db.manyOrNone(sql, [blog_user_id])
 }
 
