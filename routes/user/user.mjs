@@ -45,6 +45,7 @@ router.post('/register/', (req, res) => {
         req.session.user_id = get_user_id(req.body.username)
         req.session.logged_in = true
         add_user_permissions(req.session.user_id).then(result => {
+            console.log('Added user permissions to new user: ' + req.session.user_id.toString())
         }).catch(error => {
             console.debug('Error adding user permissions ' + error.toString())
             res.redirect('/user/register/fail/')
