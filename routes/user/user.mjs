@@ -24,6 +24,11 @@ import { check_password_hash } from './user_hashing.mjs'
 const router = express.Router()
 
 router.get('/register/', (req, res) => {
+    if (req.session.logged_in) {
+        console.debug('You are already logged into an account and can\'t create a new one: ' + req.session.username)
+        res.redirect('/user/register/success/')
+    }
+
     res.render('user/register', {
         title: 'Register a Nanoscopic Blog Account',
         meta_desc: 'Register a Nanoscopic account so that you can comment and read all the blog posts contained on ' +
@@ -67,6 +72,11 @@ router.get('/register/fail/', (req, res) => {
 })
 
 router.get('/login/', (req, res) => {
+    if (req.session.logged_in) {
+        console.debug('You are already logged into a Nanoscopic account: ' + req.session.username)
+        res.redirect('/login/success/')
+    }
+
     res.render('user/login', {
         title: 'Login to your Nanoscopic blog account',
         meta_desc: 'Login to your Nanoscopic blog account.',
