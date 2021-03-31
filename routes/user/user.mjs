@@ -82,11 +82,19 @@ router.post('/login/', (req, res) => {
             req.session.username = req.body.username
             req.session.user_id = get_user_id(req.body.username)
             req.session.logged_in = true
-            res.redirect('/user/login/succeed/')
+            res.redirect('/user/login/success/')
         }
     }).catch(error => {
         console.debug('Error logging user in: ', error.toString())
         res.redirect('/user/login/fail/')
+    })
+})
+
+router.get('/login/success', (req, res) => {
+    res.render('user/login_success', {
+        title: 'You have successfully logged into your Nanoscopic account',
+        meta_desc: 'You have successfully logged into your Nanoscopic account',
+        logged_in: req.session.logged_in
     })
 })
 
