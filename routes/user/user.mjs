@@ -90,7 +90,7 @@ router.post('/login/', (req, res) => {
     })
 })
 
-router.get('/login/success', (req, res) => {
+router.get('/login/success/', (req, res) => {
     res.render('user/login_success', {
         title: 'You have successfully logged into your Nanoscopic account',
         meta_desc: 'You have successfully logged into your Nanoscopic account',
