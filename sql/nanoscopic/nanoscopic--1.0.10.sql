@@ -15,15 +15,13 @@
 */
 
 CREATE OR REPLACE FUNCTION add_user_permissions () RETURNS TRIGGER AS $user_perms$
-    DECLARE
-        _blog_user_id BIGINT;
-    BEGIN
-        _blog_user_id := tg_argv[0];
-        INSERT INTO blog_user_permissions (blog_user_id) VALUES (_blog_user_id) RETURNING blog_user_permissions_id;
-    END;
-    $user_perms$ LANGUAGE plpgsql;
+BEGIN
+    INSERT INTO blog_user_permissions (blog_user_id) VALUES (NEW.blog_user_id);
+    RETURN NULL;
+END
+$user_perms$ LANGUAGE plpgsql;
 
 CREATE TRIGGER add_permissions
     AFTER INSERT ON blog_user
     FOR EACH ROW
-    EXECUTE FUNCTION add_user_permissions (blog_user_id);
+EXECUTE FUNCTION add_user_permissions ();
