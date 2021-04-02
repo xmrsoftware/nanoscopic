@@ -46,7 +46,11 @@ router.post('/register/', (req, res) => {
 
     create_user_object(req.body.username, req.body.email, req.body.password, v4()).then(result => {
         req.session.username = req.body.username
-        req.session.user_id = get_user_id(req.body.username)
+        get_user_id(req.body.username).then(result => {
+            req.session.user_id = result.get_user_id_by_username
+        }).catch(error => {
+            console.debug('Unable to get user_id ' + error.toString())
+        })
         req.session.logged_in = true
         res.redirect('/user/register/success/')
     }).catch(error => {
@@ -90,7 +94,11 @@ router.post('/login/', (req, res) => {
             get_user_salt(req.body.username))
         if (user_password_true) {
             req.session.username = req.body.username
-            req.session.user_id = get_user_id(req.body.username)
+            get_user_id(req.body.username).then(result => {
+                req.session.user_id = result.get_user_id_from_username
+            }).catch(error => {
+                console.debug('Unable to get user_id ' + error.toString())
+            })
             req.session.logged_in = true
             res.redirect('/user/login/success/')
         }
