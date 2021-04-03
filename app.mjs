@@ -16,7 +16,8 @@
    limitations under the License.
 */
 
-import { readdirSync } from 'fs'
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import express from 'express'
 import hbs from 'express-handlebars'
 import cookie_session from 'cookie-session'
@@ -44,8 +45,9 @@ app.use(cookie_session({
     sameSite: true,
     signed: true
 }))
-const public_static_files = readdirSync(new URL('./public', import.meta.url));
-app.use('/static', express.static(public_static_files + '/public'))
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+app.use('/static', express.static(__dirname + '/public'))
 app.use(express.json())
 app.use(express.urlencoded({
     extended: true

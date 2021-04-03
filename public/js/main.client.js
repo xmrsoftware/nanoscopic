@@ -15,3 +15,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+
+document.getElementById('create_new_blog').onclick = function create_new_blog_button_on_click() {
+    window.location.assign('/cp/blog/create/')
+}
