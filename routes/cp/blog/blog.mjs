@@ -22,7 +22,7 @@ import { check_if_logged_in } from './../../../utils.mjs'
 
 const router = express.Router()
 
-router.get('/blog/create/', (req, res) => {
+router.get('/create/', (req, res) => {
     check_if_logged_in(req, res)
 
     res.render('cp/blog/cp_new_blog', {
@@ -34,7 +34,7 @@ router.get('/blog/create/', (req, res) => {
     })
 })
 
-router.post('/blog/create/', (req, res) => {
+router.post('/create/', (req, res) => {
     check_if_logged_in(req, res)
 
     create_blog(req.session.user_id, req.body.title, req.body.description)
@@ -46,7 +46,7 @@ router.post('/blog/create/', (req, res) => {
     })
 })
 
-router.get('/blog/create/fail/', (req, res) => {
+router.get('/create/fail/', (req, res) => {
     check_if_logged_in(req, res)
 
     res.render('cp/blog/cp_new_blog_fail', {
@@ -57,7 +57,7 @@ router.get('/blog/create/fail/', (req, res) => {
     })
 })
 
-router.get('/blog/delete/:blogID/confirm/', (req, res) => {
+router.get('/delete/:blogID/confirm/', (req, res) => {
     check_if_logged_in(req, res)
 
     const blog = get_blog(req.params.blogID, req.session.user_id)
@@ -72,7 +72,7 @@ router.get('/blog/delete/:blogID/confirm/', (req, res) => {
     })
 })
 
-router.post('/blog/delete/:blogID/confirm/', (req, res) => {
+router.post('/delete/:blogID/confirm/', (req, res) => {
     check_if_logged_in(req, res)
 
     const blog = get_blog(req.params.blogID, req.session.user_id)
@@ -80,7 +80,7 @@ router.post('/blog/delete/:blogID/confirm/', (req, res) => {
     res.redirect('/cp/blog/delete/' + blog.blog_id + '/')
 })
 
-router.post('/blog/delete/:blogID/', (req, res) => {
+router.post('/delete/:blogID/', (req, res) => {
     check_if_logged_in(req, res)
 
     delete_blog(req.params.blogID, req.session.user_id)
@@ -92,7 +92,7 @@ router.post('/blog/delete/:blogID/', (req, res) => {
         })
 })
 
-router.get('/blog/delete/fail/', (req, res) => {
+router.get('/delete/fail/', (req, res) => {
     check_if_logged_in(req, res)
 
     res.render('cp/blog/cp_delete_blog_fail', {
@@ -103,7 +103,7 @@ router.get('/blog/delete/fail/', (req, res) => {
     })
 })
 
-router.get('/blog/update/:blogID/', (req, res) => {
+router.get('/update/:blogID/', (req, res) => {
     check_if_logged_in(req, res)
 
     res.render('cp/blog/cp_update_blog', {
@@ -115,7 +115,7 @@ router.get('/blog/update/:blogID/', (req, res) => {
     })
 })
 
-router.post('/blog/update/:blogID/', (req, res) => {
+router.post('/update/:blogID/', (req, res) => {
     check_if_logged_in(req, res)
 
     update_blog(req.params.blogID, req.session.user_id, req.body.name, req.body.description)
@@ -127,7 +127,7 @@ router.post('/blog/update/:blogID/', (req, res) => {
     })
 })
 
-router.get('/blog/update/fail/', (req, res) => {
+router.get('/update/fail/', (req, res) => {
     check_if_logged_in(req, res)
 
     res.render('cp/blog/cp_update_blog_fail', {
@@ -138,16 +138,34 @@ router.get('/blog/update/fail/', (req, res) => {
     })
 })
 
-router.get('/blog/list/all/', (req, res) => {
+router.get('/', (req, res) => {
     check_if_logged_in(req, res)
 
     list_blogs(req.session.user_id)
         .then(result => {
             console.log(result)
+            res.render('cp/blog/cp_list_all_blog', {
+                title: 'List of all of your blogs',
+                meta_desc: 'List of all of your blogs.',
+                layout: 'cp',
+                logged_in: req.session.logged_in,
+                blog_list: result
+            })
         }).catch(error => {
-            console.debug('Unable to retrieve list of blogs for user: ' + req.session.username + ' ' + error)
+            console.debug('Unable to retrieve list of blogs for user: ' + req.session.username + ' ' + error.toString())
+            res.redirect('/cp/blog/list/fail/')
     })
-    // TODO: Render template
+})
+
+router.get('/list/fail/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    res.render('cp/blog/cp_list_all_blog_fail', {
+        title: 'There was an error trying to list your blogs',
+        meta_desc: 'There was an error trying to list your blogs',
+        layout: 'cp',
+        logged_in: req.session.logged_in
+    })
 })
 
 export {router}
