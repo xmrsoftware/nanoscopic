@@ -1,0 +1,13 @@
+<h1>{{title}}</h1>
+{{# if blog_list}}
+    <ul>
+        {{#each blog_list}}
+            <li><a href="/cp/blog/update/{{@key}}/">{{this}}</a></li>
+        {{/each}}
+    </ul>
+{{else}}
+    <p>
+        You currently have no blogs associated with your account.
+    </p>
+    <button type="button" value="create_new_blog_button" id="create_new_blog">Create New Blog</button>
+{{/if}}
