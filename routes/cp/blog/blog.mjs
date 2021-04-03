@@ -141,16 +141,17 @@ router.get('/update/fail/', (req, res) => {
 router.get('/', (req, res) => {
     check_if_logged_in(req, res)
 
-    list_blogs(req.session.user_id)
-        .then(result => {
-            console.log(result)
-            res.render('cp/blog/cp_list_all_blog', {
-                title: 'List of all of your blogs',
-                meta_desc: 'List of all of your blogs.',
-                layout: 'cp',
-                logged_in: req.session.logged_in,
-                blog_list: result
-            })
+    list_blogs(req.session.user_id).then(result => {
+        if (result.length === 0) {
+            result = false
+        }
+        res.render('cp/blog/cp_list_all_blog', {
+            title: 'List of all of your blogs',
+            meta_desc: 'List of all of your blogs.',
+            layout: 'cp',
+            logged_in: req.session.logged_in,
+            blog_list: result
+        })
         }).catch(error => {
             console.debug('Unable to retrieve list of blogs for user: ' + req.session.username + ' ' + error.toString())
             res.redirect('/cp/blog/list/fail/')
