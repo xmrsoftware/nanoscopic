@@ -18,8 +18,7 @@
 
 import { v4 } from 'uuid'
 import express from 'express'
-import { create_user_object, get_user_id, check_user_password, get_user_salt } from './user.sql.mjs'
-import { check_password_hash } from './user_hashing.mjs'
+import { create_user_object, get_user_id, check_user } from './user.sql.mjs'
 
 const router = express.Router()
 
@@ -78,7 +77,7 @@ router.get('/register/fail/', (req, res) => {
 router.get('/login/', (req, res) => {
     if (req.session.logged_in) {
         console.debug('You are already logged into a Nanoscopic account: ' + req.session.username)
-        res.redirect('/login/success/')
+        res.redirect('/user/login/success/')
     }
 
     res.render('user/login', {
@@ -89,21 +88,13 @@ router.get('/login/', (req, res) => {
 })
 
 router.post('/login/', (req, res) => {
-    const salted_password = check_user_password(req.body.username).then(result => {
-        const user_password_true = check_password_hash(req.body.password, salted_password,
-            get_user_salt(req.body.username))
-        if (user_password_true) {
-            req.session.username = req.body.username
-            get_user_id(req.body.username).then(result => {
-                req.session.user_id = result.get_user_id_from_username
-            }).catch(error => {
-                console.debug('Unable to get user_id ' + error.toString())
-            })
-            req.session.logged_in = true
-            res.redirect('/user/login/success/')
-        }
+    check_user(req.body.username, req.body.password).then(result => {
+        req.session.username = req.body.username
+        req.session.user_id = result
+        req.session.logged_in = true
+        res.redirect('/user/login/success/')
     }).catch(error => {
-        console.debug('Error logging user in: ', error.toString())
+        console.debug('Unable to login user: ' + error.toString())
         res.redirect('/user/login/fail/')
     })
 })
