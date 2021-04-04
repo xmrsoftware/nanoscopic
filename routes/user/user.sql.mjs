@@ -16,7 +16,7 @@
    limitations under the License.
 */
 
-import { check_password_hash, hash_new_password } from './user_hashing.mjs';
+import { hash_new_password } from './user_hashing.mjs';
 import { db } from '../../sql.mjs'
 
 async function get_user_salt(username) {
@@ -40,25 +40,4 @@ async function get_user_id(username) {
     return await db.one(sql, [username])
 }
 
-async function check_user(username, password) {
-    get_user_salt(username).then(get_user_salt_result => {
-        const salt = get_user_salt_result.get_user_salt
-        check_user_password(username).then(check_user_password_result => {
-            const salt_password = check_user_password_result.get_salt_password_by_username
-            const password_result = check_password_hash(password, salt_password, salt)
-            if (password_result) {
-                get_user_id(username).then(get_user_id_result => {
-                    return get_user_id_result.get_user_id_by_username
-                }).catch(error => {
-                    console.debug('Error getting user_id: ' + error.toString())
-                })
-            }
-        }).catch(error => {
-            console.debug('Unable to check users password: ' + error.toString())
-        })
-    }).catch(error => {
-        console.debug('Error getting users salt: ' + error.toString())
-    })
-}
-
-export { get_user_salt, create_user_object, check_user_password, get_user_id, check_user }
+export {get_user_salt, create_user_object, check_user_password, get_user_id}
