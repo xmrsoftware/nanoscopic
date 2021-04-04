@@ -92,7 +92,8 @@ router.post('/login/', (req, res) => {
     check_user_password(req.body.username).then(db_salt_password_result => {
         const db_salted_password = db_salt_password_result
         get_user_salt(req.body.username).then(user_salt_result => {
-            if (check_password_hash(req.body.password, db_salted_password.get_salt_password_by_username, user_salt_result.get_user_salt) === false) {
+            if (check_password_hash(req.body.password, db_salted_password.get_salt_password_by_username,
+                user_salt_result.get_user_salt) === false) {
                 console.debug('Unable to verify password')
                 res.redirect('/login/fail/')
             }
