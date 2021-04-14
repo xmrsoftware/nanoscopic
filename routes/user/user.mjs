@@ -106,15 +106,15 @@ router.post('/login/', (req, res) => {
         res.redirect('/user/login/fail/')
     })
 
-    req.session.username = req.body.username
     get_user_id(req.body.username).then(result => {
+        req.session.username = req.body.username
         req.session.user_id = result.get_user_id_by_username
+        req.session.logged_in = true
+        res.redirect('/user/login/success/')
     }).catch(error => {
         console.debug('Unable to get user_id: ' + error.toString())
         res.redirect('/user/login/fail/')
     })
-    req.session.logged_in = true
-    res.redirect('/user/login/success/')
 })
 
 router.get('/login/success/', (req, res) => {

@@ -1,5 +1,3 @@
-'use strict';
-
 /*
    Copyright 2021 XMR VPS Ltd
 
@@ -16,8 +14,9 @@
    limitations under the License.
 */
 
-function get_blog_id() {
-    const url = window.location.href
-    const blog_url = url.split('/')
-    return blog_url[6]
-}
+DROP FUNCTION get_blog(_blog_id BIGINT, _blog_user_id BIGINT);
+
+CREATE OR REPLACE FUNCTION get_blog(IN _blog_id BIGINT, IN _blog_user_id BIGINT) RETURNS TABLE
+    (blog_id BIGINT, blog_user_id BIGINT, blog_name TEXT, blog_description TEXT) AS
+    'SELECT blog_id, blog_user_id, blog_name, blog_description FROM blog WHERE blog_id = _blog_id AND blog_user_id = _blog_user_id;'
+    LANGUAGE SQL;

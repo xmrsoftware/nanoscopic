@@ -2,12 +2,17 @@
 {{# if blog_list}}
     <ul>
         {{#each blog_list}}
-            <li><a href="/cp/blog/update/{{@key}}/">{{this}}</a></li>
+            <li><a href="/cp/blog/show/{{_blog_id}}/">{{{_blog_name}}}</a></li>
         {{/each}}
     </ul>
+    <p>
+        <a href="/cp/blog/create/">Create New Blog</a>
+    </p>
 {{else}}
     <p>
         You currently have no blogs associated with your account.
     </p>
-    <button type="button" value="create_new_blog_button" id="create_new_blog">Create New Blog</button>
+    <p>
+        <a href="/cp/blog/create/">Create New Blog</a>
+    </p>
 {{/if}}

@@ -1,0 +1,10 @@
+<h1>{{title}}</h1>
+<p>
+    Are you sure you want to delete the blog called {{title}} Once you have deleted it you will not be able to recover
+    any of the content it contains.
+</p>
+<p>
+    <form action="/cp/blog/delete/{{blog_id}}/" method="post">
+        <input type="submit" value="Delete Blog">
+    </form>
+</p>

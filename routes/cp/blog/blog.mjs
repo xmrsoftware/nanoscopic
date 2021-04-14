@@ -37,12 +37,12 @@ router.get('/create/', (req, res) => {
 router.post('/create/', (req, res) => {
     check_if_logged_in(req, res)
 
-    create_blog(req.session.user_id, req.body.title, req.body.description)
+    create_blog(req.session.user_id, req.body.title, req.body.description, req.body.meta_desc)
         .then(() => {
-            res.redirect('/cp/blog/list/all/')
+            res.redirect('/cp/blog/')
         }).catch(error => {
-        console.debug('Error creating blog ' + error.toString())
-        res.redirect('/cp/blog/create/fail/')
+            console.debug('Error creating blog ' + error.toString())
+            res.redirect('/cp/blog/create/fail/')
     })
 })
 
@@ -60,24 +60,19 @@ router.get('/create/fail/', (req, res) => {
 router.get('/delete/:blogID/confirm/', (req, res) => {
     check_if_logged_in(req, res)
 
-    const blog = get_blog(req.params.blogID, req.session.user_id)
-
-    res.render('cp/blog/cp_delete_blog_confirm', {
-        title: 'Are you sure you wish to delete the blog called ' + blog.name + '?',
-        meta_desc: 'Are you sure you want to delete the blog called ' + blog.name + '?',
-        layout: 'cp',
-        form_css: true,
-        logged_in: req.session.logged_in,
-        blog_id: blog.blog_id
+    get_blog(req.params.blogID, req.session.user_id).then(result => {
+        res.render('cp/blog/cp_delete_blog_confirm', {
+            title: 'Are you sure you wish to delete the blog called ' + result.blog_name + '?',
+            meta_desc: result.blog_meta_description,
+            layout: 'cp',
+            form_css: true,
+            logged_in: req.session.logged_in,
+            blog_id: result.blog_id
+        })
+    }).catch(error => {
+        console.debug('Unable to confirm delete of blog: ' + error.toString())
+        res.redirect('/cp/blog/delete/fail/')
     })
-})
-
-router.post('/delete/:blogID/confirm/', (req, res) => {
-    check_if_logged_in(req, res)
-
-    const blog = get_blog(req.params.blogID, req.session.user_id)
-
-    res.redirect('/cp/blog/delete/' + blog.blog_id + '/')
 })
 
 router.post('/delete/:blogID/', (req, res) => {
@@ -85,7 +80,7 @@ router.post('/delete/:blogID/', (req, res) => {
 
     delete_blog(req.params.blogID, req.session.user_id)
         .then(result => {
-            res.redirect('/')
+            res.redirect('/cp/blog/')
         }).catch(error => {
             console.debug('Unable to delete blog ' + error.toString())
             res.redirect('/cp/blog/delete/fail/')
@@ -118,9 +113,9 @@ router.get('/update/:blogID/', (req, res) => {
 router.post('/update/:blogID/', (req, res) => {
     check_if_logged_in(req, res)
 
-    update_blog(req.params.blogID, req.session.user_id, req.body.name, req.body.description)
+    update_blog(req.params.blogID, req.session.user_id, req.body.title, req.body.description, req.body.meta_desc)
         .then(result => {
-            console.log(result)
+            res.redirect('/')
         }).catch(error => {
             console.debug('Error updating blog ' + error.toString())
             res.redirect('/cp/blog/update/error/')
@@ -164,6 +159,36 @@ router.get('/list/fail/', (req, res) => {
     res.render('cp/blog/cp_list_all_blog_fail', {
         title: 'There was an error trying to list your blogs',
         meta_desc: 'There was an error trying to list your blogs',
+        layout: 'cp',
+        logged_in: req.session.logged_in
+    })
+})
+
+router.get('/show/:BlogID/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    get_blog(req.params.BlogID, req.session.user_id).then(result => {
+        res.render('cp/blog/cp_display_blog', {
+            title: result.blog_name,
+            meta_desc: result.blog_meta_description,
+            layout: 'cp',
+            logged_in: req.session.logged_in,
+            blog_id: result.blog_id,
+            blog_name: result.blog_name,
+            blog_description: result.blog_description
+        })
+    }).catch(error => {
+        console.debug('Unable to show blog with ID: ' + req.params.BlogID.toString() + ' ' + error.toString())
+        res.redirect('/cp/blog/show/fail/')
+    })
+})
+
+router.get('/show/fail/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    res.render('cp/blog/cp_display_blog_fail', {
+        title: 'Unable to view blog',
+        meta_desc: 'Unable to display blog',
         layout: 'cp',
         logged_in: req.session.logged_in
     })
