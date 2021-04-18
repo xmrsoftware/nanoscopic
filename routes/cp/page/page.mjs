@@ -15,3 +15,136 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+
+import express from 'express'
+import { list_all_blog_pages, get_blog_id_from_user_id, create_blog_page, delete_blog_page } from './page.sql.mjs';
+import { update_blog_page, get_blog_page } from './page.sql.mjs';
+import { check_if_logged_in } from './../../../utils.mjs'
+
+const router = express.Router()
+
+router.get('/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    list_all_blog_pages(req.session.user_id).then(result => {
+        if (result === undefined || result === null || result.length === 0) {
+            res.redirect('/cp/page/create/')
+        }
+
+        res.render('cp/page/cp_list_blog_pages', {
+            title: 'List of all of your pages on Nanoscopic',
+            meta_desc: 'List of all of your pages on Nanoscopic',
+            layout: 'cp',
+            blog_pages: result,
+            logged_in: req.session.logged_in
+        })
+    }).catch(error => {
+        console.debug('Unable to list all blog pages: ' + error.toString())
+    })
+})
+
+router.get('/create/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    get_blog_id_from_user_id(req.session.user_id).then(result => {
+        if (result === undefined || result === null || result.length === 0) {
+            res.redirect('/cp/blog/create/?return_url=/cp/page/create/')
+        }
+
+        res.render('cp/page/cp_new_page', {
+            title: 'Select which blog to create the page on',
+            meta_desc: 'Select which blog to create the page on',
+            layout: 'cp',
+            blogs: result,
+            logged_in: req.session.logged_in
+        })
+    }).catch(error => {
+        console.debug('Unable to get blog ID from user ID: ' + error.toString())
+    })
+})
+
+router.get('/create/:BlogID/', (req, res) => {
+    res.render('cp/page/cp_new_page_form', {
+        title: 'Create a new page on your blog',
+        meta_desc: 'Create a new page on your blog',
+        layout: 'cp',
+        form_css: true,
+        blog_id: req.params.BlogID,
+        logged_in: req.session.logged_in
+    })
+})
+
+router.post('/create/:BlogID/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    create_blog_page(req.params.BlogID, req.session.user_id, req.body.title, req.body.content, req.body.meta_desc)
+        .then(result => {
+            res.redirect('/')
+        }).catch(error => {
+            console.debug('Unable to create blog page: ' + error.toString())
+        })
+})
+
+router.get('/delete/confirm/:BlogID/:PageID/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    res.render('cp_page_delete_confirm', {
+        title: 'Confirm deletion of page',
+        meta_desc: 'Confirm deletion of page',
+        layout: 'cp',
+        blog_id: req.params.BlogID,
+        page_id: req.params.PageID,
+        logged_in: req.session.logged_in
+    })
+})
+
+router.post('/delete/:BlogID/:PageID/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    delete_blog_page(req.session.user_id, req.params.BlogID, req.params.PageID).then(result => {
+        res.redirect('/')
+    }).catch(error => {
+        console.debug('Error deleting blog page: ' + error.toString())
+    })
+})
+
+router.get('/update/:BlogID/:PageID/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    res.render('cp/page/cp_update_page', {
+        title: 'Update your page',
+        meta_desc: 'Update your page',
+        layout: 'cp',
+        blog_id: req.params.BlogID,
+        page_id: req.params.PageID,
+        logged_in: req.session.logged_in
+    })
+})
+
+router.post('/update/:BlogID/:PageID/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    update_blog_page(req.params.BlogID, req.session.id, req.params.PageID, req.body.title, req.body.content,
+        req.body.meta_desc)
+        .then(result => {
+            res.redirect('/')
+        }).catch(error => {
+            console.debug('Unable to update blog page: ' + error.toString())
+    })
+})
+
+router.get('/show/:BlogID/:PageID/', (req, res) => {
+    get_blog_page(req.session.user_id, req.params.PageID).then(result => {
+        res.render('cp/page/cp_display_page', {
+            title: result._blog_page_title,
+            meta_desc: result._blog_page_meta_description,
+            layout: 'cp',
+            logged_in: req.session.logged_in,
+            page_content: result._blog_page_content
+        })
+    }).catch(error => {
+        console.debug('Unable to get blog page: ' + error.toString())
+    })
+})
+
+export {router}

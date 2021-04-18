@@ -1,6 +1,6 @@
 <h1>{{title}}</h1>
 <p>
-    <form action="/cp/blog/create/" method="post">
+    <form action="/cp/blog/create/" method="post" id="create_new_blog_action">
         <label for="title">Blog Title:</label><br/>
         <input type="text" name="title" id="title" required><br/>
         <label for="meta_desc">Meta Description:</label><br/>
@@ -10,3 +10,11 @@
         <input type="submit" id="create_blog_submit" value="Create Blog">
     </form>
 </p>
+<script>
+    let form = document.getElementById('create_new_blog_action')
+    const params = window.location.search;
+    const param = new URLSearchParams(params)
+    if (param.has('return_url')) {
+       form.action = '/cp/blog/create/?return_url=' + param.get('return_url')
+    }
+</script>

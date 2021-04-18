@@ -1,0 +1,13 @@
+<h1>{{title}}</h1>
+{{# if blogs}}
+    <ul>
+    {{#each blogs}}
+        <li><a href="/cp/page/create/{{_blog_id}}/">Create a page on: {{_blog_name}}</a></li>
+    {{/each}}
+    </ul>
+{{else}}
+    <p>
+        There do not appear to be any blogs associated with your account. You can
+        <a href="/cp/blog/create/">create one here</a>.
+    </p>
+{{/if}}

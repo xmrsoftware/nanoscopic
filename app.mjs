@@ -24,7 +24,8 @@ import cookie_session from 'cookie-session'
 import dotenv from 'dotenv'
 import { router as user_routes } from './routes/user/user.mjs'
 import { router as cp_home } from './routes/cp/home.mjs'
-import { router as cp_blog_routes } from "./routes/cp/blog/blog.mjs";
+import { router as cp_blog_routes } from './routes/cp/blog/blog.mjs';
+import { router as cp_page_routes } from './routes/cp/page/page.mjs'
 
 if (process.env.NODE_ENV !== 'production') {
     dotenv.config()
@@ -61,6 +62,7 @@ app.enable('view cache')
 app.use('/user/', user_routes)
 app.use('/cp/', cp_home)
 app.use('/cp/blog/', cp_blog_routes)
+app.use('/cp/page/', cp_page_routes)
 
 app.get('/', (req, res) => {
     res.render('home', {

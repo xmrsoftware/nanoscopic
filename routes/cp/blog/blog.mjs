@@ -30,7 +30,8 @@ router.get('/create/', (req, res) => {
         meta_desc: 'Create a new Nanoscopic blog.',
         layout: 'cp',
         form_css: true,
-        logged_in: req.session.logged_in
+        logged_in: req.session.logged_in,
+        return_url: req.query.return_url
     })
 })
 
@@ -39,6 +40,9 @@ router.post('/create/', (req, res) => {
 
     create_blog(req.session.user_id, req.body.title, req.body.description, req.body.meta_desc)
         .then(() => {
+            if (req.query.return_url) {
+                res.redirect(req.query.return_url)
+            }
             res.redirect('/cp/blog/')
         }).catch(error => {
             console.debug('Error creating blog ' + error.toString())
@@ -106,7 +110,8 @@ router.get('/update/:blogID/', (req, res) => {
         meta_desc: 'Update your blog,',
         layout: 'cp',
         form_css: true,
-        logged_in: req.session.logged_in
+        logged_in: req.session.logged_in,
+        blog_id: req.params.BlogID
     })
 })
 

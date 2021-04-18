@@ -1,6 +1,6 @@
 <h1>{{title}}</h1>
 <p>
-    <form action="" method="post" id="update_form_action">
+    <form action="/cp/blog/update/{{blog_id}}/" method="post" id="update_form_action">
         <label for="blog_name"></label>Blog Title:<br/>
         <input type="text" name="title" id="title" required/><br/>
         <label for="meta_desc">Meta Description:</label><br/>
@@ -9,11 +9,4 @@
         <textarea name="description" id="description" required></textarea><br/>
         <input type="submit" id="update_blog_submit" value="Update Blog">
     </form>
-
-    <script>
-        const blog_id = get_blog_id()
-        const url = "/cp/blog/update/" + blog_id.toString() + "/"
-        let elem = document.getElementById("update_form_action")
-        elem.action = url
-    </script>
 </p>

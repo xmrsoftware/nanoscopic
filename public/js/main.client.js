@@ -15,9 +15,3 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-
-function get_blog_id() {
-    const url = window.location.href
-    const blog_url = url.split('/')
-    return blog_url[6]
-}
