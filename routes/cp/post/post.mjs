@@ -16,29 +16,65 @@
    limitations under the License.
 */
 
-const express = require('express')
-const router = express().router
+import express from 'express'
+import { create_blog_post, list_all_blog_posts } from './post.sql.mjs'
+import { get_blog_id_from_user_id } from './../page/page.sql.mjs'
+import { check_if_logged_in } from './../../../utils.mjs'
 
-router.get('/blog/post/new/', function (req, res) {
-    res.render('cp/post/cp_new_blog_post', {
-        title: 'Create a new blog post',
-        meta_desc: 'Create a new blog post',
-        form: true,
-        layout: 'cp'
+const router = express.Router()
+
+router.get('/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    list_all_blog_posts(req.session.user_id).then(result => {
+        if (result === null || result === undefined || result.length === 0) {
+            res.redirect('/cp/post/create/')
+        }
+
+        res.render('cp/post/cp_list_blog_posts', {
+            title: 'List of all of your blog posts',
+            meta_desc: 'List of all of your blog posts.',
+            layout: 'cp',
+            blog_posts: result,
+            logged_in: req.session.logged_in
+        })
+    }).catch(error => {
+        console.debug('Unable to list all blog posts: ' + error.toString())
+        res.status(500).send('Unable to list all blog posts: ' + error.toString())
     })
 })
 
-router.post('/blog/post/new/', function (req, res) {
-    // TODO: Do we need to put /cp/ for the redirect URL to work properly?
-    res.redirect('/blog/post/new/success/')
-})
+router.get('/create/', (req, res) => {
+    check_if_logged_in(req, res)
 
-router.get('/blog/post/new/success/', function (req, res) {
-    res.render('cp/post/cp_new_blog_post_published', {
-        title: 'You have successfully published your blog post',
-        meta_desc: 'You have successfully published your blog post.',
-        layout: 'cp'
+    get_blog_id_from_user_id(req.session.user_id).then(result => {
+        if (result === null || result === undefined || result.length === 0) {
+            res.redirect('/cp/blog/create/?return_url=/cp/post/create/')
+        }
+
+        res.render('cp/post/cp_new_blog_post', {
+            title: 'Create a blog post',
+            meta_desc: 'Create a blog post',
+            layout: 'cp',
+            blog_list: result,
+            logged_in: req.session.logged_in
+        })
+    }).catch(error => {
+        console.debug('Unable to create a blog post: ' + error.toString())
+        res.status(500).send('Unable to create a blog post: ' + error.toString())
     })
 })
 
-module.exports = router
+router.post('/create/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    create_blog_post(req.session.user_id, req.body.blog, req.body.title, req.body.content, req.body.meta_desc,
+        req.body.free_content).then(result => {
+            res.redirect('/cp/post/')
+    }).catch(error => {
+        console.debug('Error creating blog post: ' + error.toString())
+        res.status(500).send('Error creating blog post: ' + error.toString())
+    })
+})
+
+export {router}

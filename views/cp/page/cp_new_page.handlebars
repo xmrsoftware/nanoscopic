@@ -1,13 +1,18 @@
 <h1>{{title}}</h1>
-{{# if blogs}}
-    <ul>
-    {{#each blogs}}
-        <li><a href="/cp/page/create/{{_blog_id}}/">Create a page on: {{_blog_name}}</a></li>
-    {{/each}}
-    </ul>
-{{else}}
-    <p>
-        There do not appear to be any blogs associated with your account. You can
-        <a href="/cp/blog/create/">create one here</a>.
-    </p>
-{{/if}}
+<p>
+    <form action="/cp/page/create/" method="post">
+        <label for="blog">Blog:</label><br/>
+        <select name="blog">
+            {{#each blogs}}
+                <option value="{{_blog_id}}">{{_blog_name}}</option>
+            {{/each}}
+        </select><br/>
+        <label for="title">Page Title:</label><br/>
+        <input type="text" id="title" name="title"><br/>
+        <label for="meta_desc">Meta Description:</label><br/>
+        <textarea id="meta_desc" name="meta_desc"></textarea><br/>
+        <label for="content">Page Content:</label><br/>
+        <textarea id="content" name="content"></textarea><br/>
+        <input type="submit" id="blog_page_submit" name="blog_page_submit" value="Create Blog Page">
+    </form>
+</p>

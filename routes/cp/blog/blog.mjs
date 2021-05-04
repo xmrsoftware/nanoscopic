@@ -17,8 +17,11 @@
 */
 
 import express from 'express'
-import { create_blog, list_blogs, update_blog, delete_blog, get_blog } from './blog.sql.mjs';
+import Markdown from 'markdown-it'
+import { create_blog, list_blogs, update_blog, delete_blog, get_blog } from './blog.sql.mjs'
 import { check_if_logged_in } from './../../../utils.mjs'
+
+const md = new Markdown()
 
 const router = express.Router()
 
@@ -38,7 +41,8 @@ router.get('/create/', (req, res) => {
 router.post('/create/', (req, res) => {
     check_if_logged_in(req, res)
 
-    create_blog(req.session.user_id, req.body.title, req.body.description, req.body.meta_desc)
+    create_blog(req.session.user_id, req.body.description, req.body.url_slug, req.body.title, req.body.header,
+        req.body.meta_desc)
         .then(() => {
             if (req.query.return_url) {
                 res.redirect(req.query.return_url)
@@ -46,95 +50,75 @@ router.post('/create/', (req, res) => {
             res.redirect('/cp/blog/')
         }).catch(error => {
             console.debug('Error creating blog ' + error.toString())
-            res.redirect('/cp/blog/create/fail/')
+            res.status(500).send('Error creating blog: ' + error.toString())
     })
 })
 
-router.get('/create/fail/', (req, res) => {
+router.get('/delete/:BlogID/confirm/', (req, res) => {
     check_if_logged_in(req, res)
 
-    res.render('cp/blog/cp_new_blog_fail', {
-        title: 'Your attempt to create a new blog failed',
-        meta_desc: 'Your attempt to create a new blog failed',
-        layout: 'cp',
-        logged_in: req.session.logged_in
-    })
-})
-
-router.get('/delete/:blogID/confirm/', (req, res) => {
-    check_if_logged_in(req, res)
-
-    get_blog(req.params.blogID, req.session.user_id).then(result => {
+    get_blog(req.params.BlogID, req.session.user_id).then(result => {
         res.render('cp/blog/cp_delete_blog_confirm', {
-            title: 'Are you sure you wish to delete the blog called ' + result.blog_name + '?',
+            title: 'Are you sure you wish to delete the blog called ' + result.blog_title + '?',
+            meta_desc: 'Are you sure you wish to delete the blog called ' + result.blog_title + '?',
+            layout: 'cp',
+            form_css: true,
+            logged_in: req.session.logged_in,
+            blog_id: result.blog_id,
+            blog_title: result.blog_title,
+            blog_header: result.blog_header
+        })
+    }).catch(error => {
+        console.debug('Unable to confirm delete of blog: ' + error.toString())
+        res.status(500).send('Unable to confirm delete of blog: ' + error.toString())
+    })
+})
+
+router.post('/delete/:BlogID/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    delete_blog(req.params.BlogID, req.session.user_id)
+        .then(result => {
+            res.redirect('/cp/blog/')
+        }).catch(error => {
+            console.debug('Unable to delete blog: ' + error.toString())
+            res.status(500).send('Unable to delete blog: ' + error.toString())
+        })
+})
+
+router.get('/update/:BlogID/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    get_blog(req.params.BlogID, req.session.user_id).then(result => {
+        res.render('cp/blog/cp_update_blog', {
+            title: result.blog_title,
             meta_desc: result.blog_meta_description,
             layout: 'cp',
             form_css: true,
             logged_in: req.session.logged_in,
-            blog_id: result.blog_id
+            blog_id: result.blog_id,
+            blog_title: result.blog_title,
+            blog_header: result.blog_header,
+            blog_url_slug: result.blog_url_slug,
+            blog_meta_desc: result.blog_meta_description,
+            blog_description: result.blog_description
         })
     }).catch(error => {
-        console.debug('Unable to confirm delete of blog: ' + error.toString())
-        res.redirect('/cp/blog/delete/fail/')
+        console.debug('Error updating blog: ' + error.toString())
+        res.status(500).send('Error updating blog: ' + error.toString())
     })
 })
 
-router.post('/delete/:blogID/', (req, res) => {
+router.post('/update/:BlogID/', (req, res) => {
     check_if_logged_in(req, res)
 
-    delete_blog(req.params.blogID, req.session.user_id)
-        .then(result => {
-            res.redirect('/cp/blog/')
-        }).catch(error => {
-            console.debug('Unable to delete blog ' + error.toString())
-            res.redirect('/cp/blog/delete/fail/')
-        })
-})
-
-router.get('/delete/fail/', (req, res) => {
-    check_if_logged_in(req, res)
-
-    res.render('cp/blog/cp_delete_blog_fail', {
-        title: 'There has been an error when deleting your blog',
-        meta_desc: 'There has been an error when deleting your blog',
-        layout: 'cp',
-        logged_in: req.session.logged_in
-    })
-})
-
-router.get('/update/:blogID/', (req, res) => {
-    check_if_logged_in(req, res)
-
-    res.render('cp/blog/cp_update_blog', {
-        title: 'Update your blog',
-        meta_desc: 'Update your blog,',
-        layout: 'cp',
-        form_css: true,
-        logged_in: req.session.logged_in,
-        blog_id: req.params.BlogID
-    })
-})
-
-router.post('/update/:blogID/', (req, res) => {
-    check_if_logged_in(req, res)
-
-    update_blog(req.params.blogID, req.session.user_id, req.body.title, req.body.description, req.body.meta_desc)
+    update_blog(req.params.BlogID, req.session.user_id, req.body.title, req.body.header, req.body.description,
+        req.body.url_slug, req.body.meta_desc)
         .then(result => {
             res.redirect('/')
         }).catch(error => {
             console.debug('Error updating blog ' + error.toString())
-            res.redirect('/cp/blog/update/error/')
-    })
-})
-
-router.get('/update/fail/', (req, res) => {
-    check_if_logged_in(req, res)
-
-    res.render('cp/blog/cp_update_blog_fail', {
-        title: 'There was an error updating your blog',
-        meta_desc: 'There was an error updating your blog',
-        layout: 'cp',
-        logged_in: req.session.logged_in
+            res.status(500).send('Error updating blog: ' + error.toString())
     })
 })
 
@@ -154,18 +138,8 @@ router.get('/', (req, res) => {
         })
         }).catch(error => {
             console.debug('Unable to retrieve list of blogs for user: ' + req.session.username + ' ' + error.toString())
-            res.redirect('/cp/blog/list/fail/')
-    })
-})
-
-router.get('/list/fail/', (req, res) => {
-    check_if_logged_in(req, res)
-
-    res.render('cp/blog/cp_list_all_blog_fail', {
-        title: 'There was an error trying to list your blogs',
-        meta_desc: 'There was an error trying to list your blogs',
-        layout: 'cp',
-        logged_in: req.session.logged_in
+            res.status(500).send('Unable to retrieve list of blogs for user ' +
+                req.session.username + ' ' + error.toString())
     })
 })
 
@@ -174,28 +148,17 @@ router.get('/show/:BlogID/', (req, res) => {
 
     get_blog(req.params.BlogID, req.session.user_id).then(result => {
         res.render('cp/blog/cp_display_blog', {
-            title: result.blog_name,
+            title: result.blog_title,
             meta_desc: result.blog_meta_description,
             layout: 'cp',
             logged_in: req.session.logged_in,
             blog_id: result.blog_id,
-            blog_name: result.blog_name,
-            blog_description: result.blog_description
+            blog_header: result.blog_header,
+            blog_description: md.render(result.blog_description)
         })
     }).catch(error => {
         console.debug('Unable to show blog with ID: ' + req.params.BlogID.toString() + ' ' + error.toString())
-        res.redirect('/cp/blog/show/fail/')
-    })
-})
-
-router.get('/show/fail/', (req, res) => {
-    check_if_logged_in(req, res)
-
-    res.render('cp/blog/cp_display_blog_fail', {
-        title: 'Unable to view blog',
-        meta_desc: 'Unable to display blog',
-        layout: 'cp',
-        logged_in: req.session.logged_in
+        res.status(500).send('Unable to show blog with ID ' + req.params.BlogID.toString() + ' ' + error.toString())
     })
 })
 

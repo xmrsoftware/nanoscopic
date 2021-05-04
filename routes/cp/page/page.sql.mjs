@@ -16,10 +16,7 @@
    limitations under the License.
 */
 
-import Markdown from 'markdown-it'
 import { db } from './../../../sql.mjs'
-
-const md = new Markdown()
 
 async function list_all_blog_pages(user_id) {
     const sql = 'SELECT * FROM get_page_and_blog_detail($1);'
@@ -33,8 +30,8 @@ async function get_blog_id_from_user_id(user_id) {
 
 async function create_blog_page(blog_id, blog_user_id, blog_page_title, blog_page_content, blog_page_meta_description) {
     const sql = 'CALL create_blog_page($1, $2, $3, $4, $5);'
-    return await db.none(sql, [blog_id, blog_user_id, md.renderInline(blog_page_title),
-        md.render(blog_page_content), blog_page_meta_description])
+    return await db.none(sql, [blog_id, blog_user_id, blog_page_title, blog_page_content,
+        blog_page_meta_description])
 }
 
 async function delete_blog_page(blog_id, blog_user_id, blog_page_id) {
@@ -45,8 +42,8 @@ async function delete_blog_page(blog_id, blog_user_id, blog_page_id) {
 async function update_blog_page(blog_id, blog_user_id, blog_page_id, blog_page_title, blog_page_content,
                                 blog_page_meta_description) {
     const sql = 'CALL update_blog_page($1, $2, $3, $4, $5, $6);'
-    return await db.none(sql, [blog_id, blog_user_id, blog_page_id, md.renderInline(blog_page_title),
-        md.render(blog_page_content), blog_page_meta_description])
+    return await db.none(sql, [blog_id, blog_user_id, blog_page_id, blog_page_title, blog_page_content,
+        blog_page_meta_description])
 }
 
 async function get_blog_page(user_id, page_id) {

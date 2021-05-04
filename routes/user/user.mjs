@@ -26,7 +26,7 @@ const router = express.Router()
 router.get('/register/', (req, res) => {
     if (req.session.logged_in) {
         console.debug('You are already logged into an account and can\'t create a new one: ' + req.session.username)
-        res.redirect('/user/register/success/')
+        res.redirect('/cp/')
     }
 
     res.render('user/register', {
@@ -41,45 +41,29 @@ router.get('/register/', (req, res) => {
 router.post('/register/', (req, res) => {
     if (req.body.password !== req.body.password_confirm) {
         console.debug('Passwords do not match in register form')
-        res.redirect('/user/register/fail/')
+        res.status(500).send('Password do not match in the register form')
     }
 
-    create_user_object(req.body.username, req.body.email, req.body.password, v4()).then(result => {
-        req.session.username = req.body.username
+    create_user_object(req.body.username, req.body.email, req.body.password, v4(), v4()).then(() => {
         get_user_id(req.body.username).then(result => {
+            req.session.username = req.body.username
             req.session.user_id = result.get_user_id_by_username
+            req.session.logged_in = true
+            res.redirect('/cp/')
         }).catch(error => {
             console.debug('Unable to get user_id ' + error.toString())
-            res.redirect('/user/register/fail/')
+            res.status(500).send('Unable to get user_id ' + error.toString())
         })
-        req.session.logged_in = true
-        res.redirect('/user/register/success/')
     }).catch(error => {
         console.debug('Error creating new user ' + error.toString())
-        res.redirect('/user/register/fail/')
-    })
-})
-
-router.get('/register/success/', (req, res) => {
-    res.render('user/register_success', {
-        title: 'You have successfully registered a Nanoscopic blog account',
-        meta_desc: 'You have successfully registered a Nanoscopic blog account.',
-        logged_in: req.session.logged_in
-    })
-})
-
-router.get('/register/fail/', (req, res) => {
-    req.session = null
-    res.render('user/register_fail', {
-        title: 'There has been an error while registering your Nanoscopic blog account',
-        meta_desc: 'There has been an error while registering your Nanoscopic blog account.',
+        res.status(500).send('Error creating new user: ' + error.toString())
     })
 })
 
 router.get('/login/', (req, res) => {
     if (req.session.logged_in) {
         console.debug('You are already logged into a Nanoscopic account: ' + req.session.username)
-        res.redirect('/user/login/success/')
+        res.redirect('/cp/')
     }
 
     res.render('user/login', {
@@ -95,41 +79,25 @@ router.post('/login/', (req, res) => {
         get_user_salt(req.body.username).then(user_salt_result => {
             if (check_password_hash(req.body.password, db_salted_password, user_salt_result.get_user_salt) === false) {
                 console.debug('Unable to verify password')
-                res.redirect('/user/login/fail/')
+                res.status(500).send('Unable to verify password')
             }
         }).catch(error => {
             console.debug('Unable to retrieve user salt from DB: ' + error.toString())
-            res.redirect('/user/login/fail/')
+            res.status(500).send('Unable to retrieve user salt from DB: ' + error.toString())
         })
     }).catch(error => {
         console.debug('Unable to retrieve salted password from DB: ' + error.toString())
-        res.redirect('/user/login/fail/')
+        res.status(500).send('Unable to retrieve salted password from DB: ' + error.toString())
     })
 
     get_user_id(req.body.username).then(result => {
         req.session.username = req.body.username
         req.session.user_id = result.get_user_id_by_username
         req.session.logged_in = true
-        res.redirect('/user/login/success/')
+        res.redirect('/cp/')
     }).catch(error => {
         console.debug('Unable to get user_id: ' + error.toString())
-        res.redirect('/user/login/fail/')
-    })
-})
-
-router.get('/login/success/', (req, res) => {
-    res.render('user/login_success', {
-        title: 'You have successfully logged into your Nanoscopic account',
-        meta_desc: 'You have successfully logged into your Nanoscopic account',
-        logged_in: req.session.logged_in
-    })
-})
-
-router.get('/login/fail/', (req, res) => {
-    req.session = null
-    res.render('user/login_fail', {
-        title: 'You have failed to login to your Nanoscopic account',
-        meta_desc: 'You have failed to login to your Nanoscopic account.',
+        res.status(500).send('Unable to get user_id: ' + error.toString())
     })
 })
 

@@ -3,5 +3,7 @@
     Are you sure you wish to delete this blog post? Once you delete it there is no way to recover it.
 </p>
 <p>
-    <a href="/cp/page/delete/{{blog_id}}/">Delete Page</a>.
+    <form action="/cp/page/delete/{{blog_id}}/{{page_id}}/" method="post">
+        <input type="submit" value="Delete Blog Page">
+    </form>
 </p>

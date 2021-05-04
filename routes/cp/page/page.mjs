@@ -17,11 +17,13 @@
 */
 
 import express from 'express'
+import Markdown from 'markdown-it'
 import { list_all_blog_pages, get_blog_id_from_user_id, create_blog_page, delete_blog_page } from './page.sql.mjs';
 import { update_blog_page, get_blog_page } from './page.sql.mjs';
 import { check_if_logged_in } from './../../../utils.mjs'
 
 const router = express.Router()
+const md = new Markdown()
 
 router.get('/', (req, res) => {
     check_if_logged_in(req, res)
@@ -40,6 +42,7 @@ router.get('/', (req, res) => {
         })
     }).catch(error => {
         console.debug('Unable to list all blog pages: ' + error.toString())
+        res.status(500).send('Unable to list all blog pages ' + error.toString())
     })
 })
 
@@ -52,36 +55,27 @@ router.get('/create/', (req, res) => {
         }
 
         res.render('cp/page/cp_new_page', {
-            title: 'Select which blog to create the page on',
-            meta_desc: 'Select which blog to create the page on',
+            title: 'Create a blog page',
+            meta_desc: 'Create a blog page',
             layout: 'cp',
             blogs: result,
             logged_in: req.session.logged_in
         })
     }).catch(error => {
         console.debug('Unable to get blog ID from user ID: ' + error.toString())
+        res.status(500).send('Unable to get blog ID from user ID: ' + error.toString())
     })
 })
 
-router.get('/create/:BlogID/', (req, res) => {
-    res.render('cp/page/cp_new_page_form', {
-        title: 'Create a new page on your blog',
-        meta_desc: 'Create a new page on your blog',
-        layout: 'cp',
-        form_css: true,
-        blog_id: req.params.BlogID,
-        logged_in: req.session.logged_in
-    })
-})
-
-router.post('/create/:BlogID/', (req, res) => {
+router.post('/create/', (req, res) => {
     check_if_logged_in(req, res)
 
-    create_blog_page(req.params.BlogID, req.session.user_id, req.body.title, req.body.content, req.body.meta_desc)
+    create_blog_page(req.body.blog, req.session.user_id, req.body.title, req.body.content, req.body.meta_desc)
         .then(result => {
             res.redirect('/')
         }).catch(error => {
             console.debug('Unable to create blog page: ' + error.toString())
+            res.status(500).send('Unable to create blog page: ' + error.toString())
         })
 })
 
@@ -105,6 +99,7 @@ router.post('/delete/:BlogID/:PageID/', (req, res) => {
         res.redirect('/')
     }).catch(error => {
         console.debug('Error deleting blog page: ' + error.toString())
+        res.status(500).send('Error deleting blog page: ' + error.toString())
     })
 })
 
@@ -130,6 +125,7 @@ router.post('/update/:BlogID/:PageID/', (req, res) => {
             res.redirect('/')
         }).catch(error => {
             console.debug('Unable to update blog page: ' + error.toString())
+            res.status(500).send('Unable to update blog page: ' + error.toString())
     })
 })
 
@@ -140,10 +136,11 @@ router.get('/show/:BlogID/:PageID/', (req, res) => {
             meta_desc: result._blog_page_meta_description,
             layout: 'cp',
             logged_in: req.session.logged_in,
-            page_content: result._blog_page_content
+            page_content: md.render(result._blog_page_content)
         })
     }).catch(error => {
         console.debug('Unable to get blog page: ' + error.toString())
+        res.status(500).send('Unable to get blog page: ' + error.toString())
     })
 })
 

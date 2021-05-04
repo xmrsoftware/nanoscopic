@@ -16,19 +16,17 @@
    limitations under the License.
 */
 
-import Markdown from 'markdown-it'
 import { db } from './../../../sql.mjs'
 
-const md = new Markdown()
-
-async function create_blog(blog_user_id, name, description, meta_desc) {
-    const sql = 'CALL create_blog ($1, $2, $3, $4);'
-    return await db.none(sql, [blog_user_id, md.renderInline(name), md.render(description), meta_desc])
+async function create_blog(blog_user_id, description, url_slug, title, header, meta_desc) {
+    const url_slug_encoded = encodeURI(url_slug)
+    const sql = 'CALL create_blog ($1, $2, $3, $4, $5, $6);'
+    return await db.none(sql, [blog_user_id, description, url_slug_encoded, title, header, meta_desc])
 }
 
 async function get_blog(blog_id, blog_user_id) {
-    const sql = 'SELECT * FROM get_blog ($1, $2);'
-    return await db.oneOrNone(sql, [blog_id, blog_user_id])
+    const sql = 'SELECT get_blog ($1, $2);'
+    return await db.oneOrNone(sql, [blog_id.toString(), blog_user_id.toString()])
 }
 
 async function delete_blog(blog_id, blog_user_id) {
@@ -36,9 +34,10 @@ async function delete_blog(blog_id, blog_user_id) {
     return await db.none(sql, [blog_id, blog_user_id])
 }
 
-async function update_blog(blog_id, blog_user_id, name, description, meta_desc) {
-    const sql = 'CALL update_blog ($1, $2, $3, $4, $5);'
-    return await db.none(sql, [blog_id, blog_user_id, md.renderInline(name), md.render(description), meta_desc])
+async function update_blog(blog_id, blog_user_id, title, header, description, url_slug, meta_desc) {
+    const url_slug_encoded = encodeURI(url_slug)
+    const sql = 'CALL update_blog ($1, $2, $3, $4, $5, $6, $7);'
+    return await db.none(sql, [blog_id, blog_user_id, title, header, description, url_slug_encoded, meta_desc])
 }
 
 async function list_blogs(blog_user_id) {

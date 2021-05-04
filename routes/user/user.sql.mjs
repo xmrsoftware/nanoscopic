@@ -24,10 +24,12 @@ async function get_user_salt(username) {
     return await db.oneOrNone(sql, [username])
 }
 
-async function create_user_object(username, email, password, salt) {
+async function create_user_object(username, email, password, salt, email_verification_code) {
+    const url_slug_encoded = encodeURI(username)
     const salted_password = hash_new_password(password, salt)
-    const sql = 'CALL create_blog_user ($1, $2, $3, $4);'
-    return await db.none(sql, [username, email, salted_password, salt])
+    const sql = 'CALL create_blog_user ($1, $2, $3, $4, $5, $6);'
+    return await db.none(sql, [username, email, salted_password, salt, url_slug_encoded,
+        email_verification_code])
 }
 
 async function check_user_password(username) {

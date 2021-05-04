@@ -1,0 +1,20 @@
+<h1>{{title}}</h1>
+<p>
+    <form action="/cp/post/create/" method="post">
+        <label for="blog">Select Blog:</label><br/>
+            <select name="blog">
+                {{#each blog_list}}
+                    <option value="{{_blog_id}}">{{_blog_name}}</option>
+                {{/each}}
+            </select><br/>
+        <label for="title">Blog Post Title:</label><br/>
+        <input type="text" id="title" name="title"/><br/>
+        <label for="meta_desc">Blog Post Meta Description:</label><br/>
+        <textarea id="meta_desc" name="meta_desc"></textarea><br/>
+        <label for="free_content">Blog Post Free Content:</label><br/>
+        <textarea id="free_content" name="free_content"></textarea><br/>
+        <label for="content">Blog Post Content:</label><br/>
+        <textarea id="content" name="content"></textarea><br/>
+        <input type="submit" id="submit_blog_post" value="Submit Blog Post">
+    </form>
+</p>

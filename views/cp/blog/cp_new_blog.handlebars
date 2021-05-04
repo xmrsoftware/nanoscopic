@@ -2,7 +2,11 @@
 <p>
     <form action="/cp/blog/create/" method="post" id="create_new_blog_action">
         <label for="title">Blog Title:</label><br/>
-        <input type="text" name="title" id="title" required><br/>
+        <input type="text" name="title" id="title" required/><br/>
+        <label for="header">Blog Header:</label><br/>
+        <input type="text" name="header" id="header" required/><br/>
+        <label for="url_slug">URL Slug:</label><br/>
+        <input type="text" name="url_slug" id="url_slug" required/><br/>
         <label for="meta_desc">Meta Description:</label><br/>
         <textarea name="meta_desc" id="meta_desc" required></textarea><br/>
         <label for="description">Blog Description:</label><br/>

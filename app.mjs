@@ -16,16 +16,17 @@
    limitations under the License.
 */
 
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url'
+import { dirname } from 'node:path'
 import express from 'express'
 import hbs from 'express-handlebars'
 import cookie_session from 'cookie-session'
 import dotenv from 'dotenv'
 import { router as user_routes } from './routes/user/user.mjs'
 import { router as cp_home } from './routes/cp/home.mjs'
-import { router as cp_blog_routes } from './routes/cp/blog/blog.mjs';
+import { router as cp_blog_routes } from './routes/cp/blog/blog.mjs'
 import { router as cp_page_routes } from './routes/cp/page/page.mjs'
+import { router as cp_post_routes } from "./routes/cp/post/post.mjs"
 
 if (process.env.NODE_ENV !== 'production') {
     dotenv.config()
@@ -63,6 +64,7 @@ app.use('/user/', user_routes)
 app.use('/cp/', cp_home)
 app.use('/cp/blog/', cp_blog_routes)
 app.use('/cp/page/', cp_page_routes)
+app.use('/cp/post/', cp_post_routes)
 
 app.get('/', (req, res) => {
     res.render('home', {

@@ -1,3 +1,5 @@
+'use strict';
+
 /*
    Copyright 2021 XMR VPS Ltd
 
@@ -14,8 +16,16 @@
    limitations under the License.
 */
 
-CREATE OR REPLACE FUNCTION get_username_by_user_id (IN _user_id BIGINT, OUT username TEXT) RETURNS TEXT AS $$
-        SELECT blog_user_username AS username FROM blog_user WHERE blog_user_id = _user_id
-    $$ LANGUAGE SQL;
+import { db } from './../../../sql.mjs'
 
-DROP FUNCTION get_username_by_userid (IN _user_id BIGINT, OUT username TEXT);
+async function create_blog_post(user_id, blog_id, title, content, meta_desc, free_content) {
+    const sql = 'CALL create_blog_post($1, $2, $3, $4, $5, $6);'
+    return await db.none(sql, [user_id, blog_id, title, content, meta_desc, free_content])
+}
+
+async function list_all_blog_posts(user_id) {
+    const sql = 'SELECT * FROM get_post_and_blog_detail($1);'
+    return await db.manyOrNone(sql, [user_id])
+}
+
+export {create_blog_post, list_all_blog_posts}
