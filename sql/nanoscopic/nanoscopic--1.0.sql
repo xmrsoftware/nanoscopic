@@ -174,10 +174,9 @@ CREATE OR REPLACE FUNCTION get_blog_id_from_blog_title(IN _blog_title BIGINT, OU
         SELECT blog.blog_id FROM blog WHERE blog_title = _blog_title;
     $$;
 
-CREATE OR REPLACE FUNCTION get_blog(IN _blog_id BIGINT, IN _blog_user_id BIGINT) RETURNS RECORD
+CREATE OR REPLACE FUNCTION get_blog(IN _blog_id BIGINT, IN _blog_user_id BIGINT) RETURNS blog
     LANGUAGE SQL AS $$
-        SELECT blog_title, blog_header, blog_description, blog_created, blog_url_slug, blog_meta_description FROM blog
-        WHERE blog_id = _blog_id AND blog_user_id = _blog_user_id;
+        SELECT * FROM blog WHERE blog_id = _blog_id AND blog_user_id = _blog_user_id;
     $$;
 
 CREATE OR REPLACE FUNCTION get_user_salt(IN _blog_username TEXT) RETURNS UUID

@@ -115,7 +115,7 @@ router.post('/update/:BlogID/', (req, res) => {
     update_blog(req.params.BlogID, req.session.user_id, req.body.title, req.body.header, req.body.description,
         req.body.url_slug, req.body.meta_desc)
         .then(result => {
-            res.redirect('/')
+            res.redirect('/cp/blog/')
         }).catch(error => {
             console.debug('Error updating blog ' + error.toString())
             res.status(500).send('Error updating blog: ' + error.toString())

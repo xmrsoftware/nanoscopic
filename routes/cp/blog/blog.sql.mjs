@@ -25,8 +25,8 @@ async function create_blog(blog_user_id, description, url_slug, title, header, m
 }
 
 async function get_blog(blog_id, blog_user_id) {
-    const sql = 'SELECT get_blog ($1, $2);'
-    return await db.oneOrNone(sql, [blog_id.toString(), blog_user_id.toString()])
+    const sql = 'SELECT * FROM get_blog ($1, $2);'
+    return await db.oneOrNone(sql, [blog_id, blog_user_id])
 }
 
 async function delete_blog(blog_id, blog_user_id) {
