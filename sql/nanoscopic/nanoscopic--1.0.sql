@@ -180,9 +180,9 @@ CREATE OR REPLACE FUNCTION get_blog(IN _blog_id BIGINT, IN _blog_user_id BIGINT)
         WHERE blog_id = _blog_id AND blog_user_id = _blog_user_id;
     $$;
 
-CREATE OR REPLACE FUNCTION get_user_salt(IN _blog_user_id BIGINT) RETURNS UUID
+CREATE OR REPLACE FUNCTION get_user_salt(IN _blog_username TEXT) RETURNS UUID
     LANGUAGE SQL AS $$
-        SELECT blog_user_salt FROM blog_user WHERE blog_user_id = _blog_user_id;
+        SELECT blog_user_salt FROM blog_user WHERE blog_user_username = _blog_username;
     $$;
 
 CREATE OR REPLACE PROCEDURE add_user_permissions(IN _blog_user_id BIGINT)
