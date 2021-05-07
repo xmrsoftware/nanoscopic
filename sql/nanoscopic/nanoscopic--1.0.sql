@@ -174,6 +174,11 @@ CREATE OR REPLACE FUNCTION get_blog_id_from_blog_title(IN _blog_title BIGINT, OU
         SELECT blog.blog_id FROM blog WHERE blog_title = _blog_title;
     $$;
 
+CREATE OR REPLACE FUNCTION get_blog_id_from_user_id(IN _user_id BIGINT) RETURNS BIGINT
+    LANGUAGE SQL AS $$
+        SELECT blog_id FROM blog WHERE blog_user_id = _user_id;
+    $$;
+
 CREATE OR REPLACE FUNCTION get_blog(IN _blog_id BIGINT, IN _blog_user_id BIGINT) RETURNS blog
     LANGUAGE SQL AS $$
         SELECT * FROM blog WHERE blog_id = _blog_id AND blog_user_id = _blog_user_id;
