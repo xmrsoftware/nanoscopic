@@ -70,9 +70,10 @@ router.get('/create/', (req, res) => {
 router.post('/create/', (req, res) => {
     check_if_logged_in(req, res)
 
-    create_blog_page(req.body.blog, req.session.user_id, req.body.title, req.body.content, req.body.meta_desc)
+    create_blog_page(req.body.blog, req.session.user_id, req.body.title, req.body.content, req.body.meta_desc,
+        req.body.header, req.body.slug)
         .then(result => {
-            res.redirect('/')
+            res.redirect('/cp/page/')
         }).catch(error => {
             console.debug('Unable to create blog page: ' + error.toString())
             res.status(500).send('Unable to create blog page: ' + error.toString())
@@ -82,15 +83,20 @@ router.post('/create/', (req, res) => {
 router.get('/delete/confirm/:BlogID/:PageID/', (req, res) => {
     check_if_logged_in(req, res)
 
-    res.render('cp_page_delete_confirm', {
-        title: 'Confirm deletion of page',
-        meta_desc: 'Confirm deletion of page',
-        layout: 'cp',
-        blog_id: req.params.BlogID,
-        page_id: req.params.PageID,
-        logged_in: req.session.logged_in
+    get_blog_page(req.session.user_id, req.params.PageID).then(result => {
+        res.render('cp/page/cp_page_delete_confirm', {
+            title: 'Confirm deletion of page',
+            meta_desc: 'Confirm deletion of page',
+            layout: 'cp',
+            blog_id: result.blog_id,
+            blog_page_id: result.blog_page_id,
+            logged_in: req.session.logged_in
+        })
+        }).catch(error => {
+            console.debug('Unable to delete blog page: ' + error.toString())
+            res.status(500).send('Unable to delete blog page: ' + error.toString())
+        })
     })
-})
 
 router.post('/delete/:BlogID/:PageID/', (req, res) => {
     check_if_logged_in(req, res)
@@ -106,23 +112,32 @@ router.post('/delete/:BlogID/:PageID/', (req, res) => {
 router.get('/update/:BlogID/:PageID/', (req, res) => {
     check_if_logged_in(req, res)
 
-    res.render('cp/page/cp_update_page', {
-        title: 'Update your page',
-        meta_desc: 'Update your page',
-        layout: 'cp',
-        blog_id: req.params.BlogID,
-        page_id: req.params.PageID,
-        logged_in: req.session.logged_in
+    get_blog_page(req.session.user_id, req.params.PageID)
+        .then(result => {
+            res.render('cp/page/cp_update_page', {
+                title: result.blog_page_title,
+                header: result.blog_page_header,
+                meta_desc: result.blog_page_meta_description,
+                layout: 'cp',
+                logged_in: req.session.logged_in,
+                page_content: result.blog_page_content,
+                blog_id: result.blog_id,
+                blog_page_id: result.blog_page_id,
+                slug: result.blog_page_url_slug
+            })
+        }).catch(error => {
+        console.debug('Unable to update blog page: ' + error.toString())
+        res.status(500).send('Unable to update blog page: ' + error.toString())
     })
 })
 
 router.post('/update/:BlogID/:PageID/', (req, res) => {
     check_if_logged_in(req, res)
 
-    update_blog_page(req.params.BlogID, req.session.id, req.params.PageID, req.body.title, req.body.content,
-        req.body.meta_desc)
+    update_blog_page(req.session.user_id, req.params.PageID, req.body.title, req.body.content, req.body.meta_desc,
+        req.body.header, req.body.slug)
         .then(result => {
-            res.redirect('/')
+            res.redirect('/cp/page/')
         }).catch(error => {
             console.debug('Unable to update blog page: ' + error.toString())
             res.status(500).send('Unable to update blog page: ' + error.toString())
@@ -132,11 +147,14 @@ router.post('/update/:BlogID/:PageID/', (req, res) => {
 router.get('/show/:BlogID/:PageID/', (req, res) => {
     get_blog_page(req.session.user_id, req.params.PageID).then(result => {
         res.render('cp/page/cp_display_page', {
-            title: result._blog_page_title,
-            meta_desc: result._blog_page_meta_description,
+            title: result.blog_page_title,
+            header: result.blog_page_header,
+            meta_desc: result.blog_page_meta_description,
             layout: 'cp',
             logged_in: req.session.logged_in,
-            page_content: md.render(result._blog_page_content)
+            page_content: md.render(result.blog_page_content),
+            blog_id: result.blog_id,
+            blog_page_id: result.blog_page_id
         })
     }).catch(error => {
         console.debug('Unable to get blog page: ' + error.toString())

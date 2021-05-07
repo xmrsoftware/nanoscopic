@@ -28,10 +28,12 @@ async function get_blog_id_from_user_id(user_id) {
     return await db.manyOrNone(sql, [user_id])
 }
 
-async function create_blog_page(blog_id, blog_user_id, blog_page_title, blog_page_content, blog_page_meta_description) {
-    const sql = 'CALL create_blog_page($1, $2, $3, $4, $5);'
+async function create_blog_page(blog_id, blog_user_id, blog_page_title, blog_page_content, blog_page_meta_description,
+                                blog_header, blog_url_slug) {
+    const url_slug_encoded = encodeURI(blog_url_slug)
+    const sql = 'CALL create_blog_page($1, $2, $3, $4, $5, $6, $7);'
     return await db.none(sql, [blog_id, blog_user_id, blog_page_title, blog_page_content,
-        blog_page_meta_description])
+        blog_page_meta_description, blog_header, url_slug_encoded])
 }
 
 async function delete_blog_page(blog_id, blog_user_id, blog_page_id) {
@@ -39,11 +41,11 @@ async function delete_blog_page(blog_id, blog_user_id, blog_page_id) {
     return await db.none(sql, [blog_id, blog_user_id, blog_page_id])
 }
 
-async function update_blog_page(blog_id, blog_user_id, blog_page_id, blog_page_title, blog_page_content,
-                                blog_page_meta_description) {
-    const sql = 'CALL update_blog_page($1, $2, $3, $4, $5, $6);'
-    return await db.none(sql, [blog_id, blog_user_id, blog_page_id, blog_page_title, blog_page_content,
-        blog_page_meta_description])
+async function update_blog_page(blog_user_id, blog_page_id, blog_page_title, blog_page_content,
+                                blog_page_meta_description, blog_header, blog_url_slug) {
+    const sql = 'CALL update_blog_page($1, $2, $3, $4, $5, $6, $7);'
+    return await db.none(sql, [blog_user_id, blog_page_id, blog_page_title, blog_page_content,
+        blog_page_meta_description, blog_header, blog_url_slug])
 }
 
 async function get_blog_page(user_id, page_id) {

@@ -232,10 +232,9 @@ CREATE OR REPLACE PROCEDURE update_blog_page(IN _blog_user_id BIGINT, IN _blog_p
         AND blog_page_id = _blog_page_id;
     $$;
 
-CREATE OR REPLACE FUNCTION get_blog_page(IN _blog_user_id BIGINT, IN _blog_page_id BIGINT) RETURNS RECORD
+CREATE OR REPLACE FUNCTION get_blog_page(IN _blog_user_id BIGINT, IN _blog_page_id BIGINT) RETURNS blog_page
     LANGUAGE SQL AS $$
-        SELECT blog_page_title, blog_page_content, blog_page_meta_description, blog_page_header, blog_page_url_slug
-        FROM blog_page WHERE blog_user_id = _blog_user_id AND blog_page_id = _blog_page_id;
+        SELECT * FROM blog_page WHERE blog_user_id = _blog_user_id AND blog_page_id = _blog_page_id;
     $$;
 
 CREATE OR REPLACE FUNCTION get_all_user_blog_pages(IN __blog_user_id BIGINT) RETURNS TABLE

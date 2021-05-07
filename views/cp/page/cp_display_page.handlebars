@@ -1,7 +1,11 @@
-<h1>{{title}}</h1>
+<h1>{{header}}</h1>
+<p>
+    <!-- FIXME: Make sure only the author can see these links -->
+    <a href="/cp/page/update/{{blog_id}}/{{blog_page_id}}/">Update Page</a> |
+    <a href="/cp/page/delete/confirm/{{blog_id}}/{{blog_page_id}}/">Delete Page</a>
+</p>
 <h2>Meta Description:</h2>
 <p>
     {{meta_desc}}
 </p>
-<h2>Blog Page:</h2>
 {{{page_content}}}
