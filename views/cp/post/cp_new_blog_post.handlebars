@@ -4,11 +4,15 @@
         <label for="blog">Select Blog:</label><br/>
             <select name="blog">
                 {{#each blog_list}}
-                    <option value="{{_blog_id}}">{{_blog_name}}</option>
+                    <option value="{{blog_id}}">{{blog_title}}</option>
                 {{/each}}
             </select><br/>
         <label for="title">Blog Post Title:</label><br/>
         <input type="text" id="title" name="title"/><br/>
+        <label for="header">Blog Post Header:</label><br/>
+        <input type="text" id="header" name="header"/><br/>
+        <label for="slug">Blog Post URL Slug:</label><br/>
+        <input type="text" id="slug" name="slug"/><br/>
         <label for="meta_desc">Blog Post Meta Description:</label><br/>
         <textarea id="meta_desc" name="meta_desc"></textarea><br/>
         <label for="free_content">Blog Post Free Content:</label><br/>

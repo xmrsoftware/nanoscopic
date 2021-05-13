@@ -69,7 +69,7 @@ router.post('/create/', (req, res) => {
     check_if_logged_in(req, res)
 
     create_blog_post(req.session.user_id, req.body.blog, req.body.title, req.body.content, req.body.meta_desc,
-        req.body.free_content).then(result => {
+        req.body.free_content, req.body.header, req.body.slug).then(result => {
             res.redirect('/cp/post/')
     }).catch(error => {
         console.debug('Error creating blog post: ' + error.toString())

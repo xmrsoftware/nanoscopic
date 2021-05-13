@@ -107,16 +107,6 @@ CREATE OR REPLACE PROCEDURE create_blog(IN _user_id BIGINT, IN _description TEXT
             _url_slug, _blog_title, _blog_header, _meta_desc);
     $$;
 
-CREATE OR REPLACE PROCEDURE create_blog_post(IN _title TEXT, IN _content TEXT, IN _user_id BIGINT, IN _blog_id BIGINT,
-    IN _header TEXT, IN _url_slug TEXT, IN _meta_desc TEXT, IN _free_content TEXT)
-    LANGUAGE SQL AS $$
-        INSERT INTO blog_post(blog_user_id, blog_id, blog_post_title, blog_post_header, blog_post_content,
-                              blog_post_published, blog_post_updated, blog_post_url_slug, blog_post_meta_description,
-                              blog_post_free_content)
-        VALUES (_user_id, _blog_id, _title, _header, _content, current_timestamp, current_timestamp, _url_slug,
-                _meta_desc, _free_content);
-    $$;
-
 CREATE OR REPLACE FUNCTION get_username_by_userid(IN _user_id BIGINT, OUT username TEXT) RETURNS TEXT
     LANGUAGE SQL AS $$
         SELECT blog_user_username AS username FROM blog_user WHERE blog_user_id = _user_id

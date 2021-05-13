@@ -1,1 +1,16 @@
 <h1>{{title}}</h1>
+{{#if blog_posts}}
+    <ul>
+        {{#each blog_posts}}
+            <li><a href="/cp/post/show/{{blog_id}}/{{blog_post_id}}/">{{blog_post_title}}</a> on blog
+                <a href="/cp/blog/show/{{blog_id}}/">{{blog_title}}</a></li>
+        {{/each}}
+    </ul>
+    <p>
+        <a href="/cp/post/create/">Create a new post</a>.
+    </p>
+{{else}}
+    <p>
+        You do not have any blog posts on your blogs. You can <a href="/cp/post/create/">create one here</a>.
+    </p>
+{{/if}}
