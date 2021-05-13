@@ -15,8 +15,9 @@
     </form>
 </p>
 <script>
+    'use strict';
     let form = document.getElementById('create_new_blog_action')
-    const params = window.location.search;
+    const params = window.location.search
     const param = new URLSearchParams(params)
     if (param.has('return_url')) {
        form.action = '/cp/blog/create/?return_url=' + param.get('return_url')

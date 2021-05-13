@@ -50,7 +50,8 @@ router.post('/create/', (req, res) => {
             res.redirect('/cp/blog/')
         }).catch(error => {
             console.debug('Error creating blog ' + error.toString())
-            res.status(500).send('Error creating blog: ' + error.toString())
+            // FIXME: Why doesn't this work when trying to redirect to create blog post?
+            //res.status(500).send('Error creating blog: ' + error.toString())
     })
 })
 
