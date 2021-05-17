@@ -83,20 +83,15 @@ router.post('/create/', (req, res) => {
 router.get('/delete/confirm/:BlogID/:PageID/', (req, res) => {
     check_if_logged_in(req, res)
 
-    get_blog_page(req.session.user_id, req.params.PageID).then(result => {
-        res.render('cp/page/cp_page_delete_confirm', {
-            title: 'Confirm deletion of page',
-            meta_desc: 'Confirm deletion of page',
-            layout: 'cp',
-            blog_id: result.blog_id,
-            blog_page_id: result.blog_page_id,
-            logged_in: req.session.logged_in
-        })
-        }).catch(error => {
-            console.debug('Unable to delete blog page: ' + error.toString())
-            res.status(500).send('Unable to delete blog page: ' + error.toString())
-        })
+    res.render('cp/page/cp_page_delete_confirm', {
+        title: 'Confirm deletion of page',
+        meta_desc: 'Confirm deletion of page',
+        layout: 'cp',
+        blog_id: req.params.BlogID,
+        blog_page_id: req.params.PageID,
+        logged_in: req.session.logged_in
     })
+})
 
 router.post('/delete/:BlogID/:PageID/', (req, res) => {
     check_if_logged_in(req, res)
@@ -126,8 +121,8 @@ router.get('/update/:BlogID/:PageID/', (req, res) => {
                 slug: result.blog_page_url_slug
             })
         }).catch(error => {
-        console.debug('Unable to update blog page: ' + error.toString())
-        res.status(500).send('Unable to update blog page: ' + error.toString())
+            console.debug('Unable to update blog page: ' + error.toString())
+            res.status(500).send('Unable to update blog page: ' + error.toString())
     })
 })
 
