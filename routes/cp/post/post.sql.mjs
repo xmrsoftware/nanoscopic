@@ -30,4 +30,22 @@ async function list_all_blog_posts(user_id) {
     return await db.manyOrNone(sql, [user_id])
 }
 
-export {create_blog_post, list_all_blog_posts}
+async function get_blog_post(user_id, post_id) {
+    const sql = 'SELECT * FROM get_blog_post($1, $2);'
+    return await db.oneOrNone(sql, [user_id, post_id])
+}
+
+async function update_blog_post(user_id, post_id, post_title, post_content, meta_description, free_content, header,
+                                slug) {
+    const url_slug_encoded = encodeURI(slug)
+    const sql = 'CALL update_blog_post($1, $2, $3, $4, $5, $6, $7, $8);'
+    return await db.none(sql, [user_id, post_id, post_title, post_content, meta_description, free_content,
+        header, url_slug_encoded])
+}
+
+async function delete_blog_post(user_id, post_id) {
+    const sql = 'CALL delete_blog_post($1, $2);'
+    return await db.none(sql, [user_id, post_id])
+}
+
+export {create_blog_post, list_all_blog_posts, get_blog_post, update_blog_post, delete_blog_post}

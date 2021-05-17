@@ -1,0 +1,18 @@
+<h1>{{title}}</h1>
+<p>
+<form action="/cp/post/update/{{blog_id}}/{{post_id}}/" method="post">
+    <label for="title">Blog Post Title:</label><br/>
+    <input type="text" id="title" name="title" value="{{title}}"/><br/>
+    <label for="header">Blog Post Header:</label><br/>
+    <input type="text" id="header" name="header" value="{{header}}"/><br/>
+    <label for="slug">Blog Post URL Slug:</label><br/>
+    <input type="text" id="slug" name="slug" value="{{slug}}"/><br/>
+    <label for="meta_desc">Blog Post Meta Description:</label><br/>
+    <textarea id="meta_desc" name="meta_desc">{{meta_desc}}</textarea><br/>
+    <label for="free_content">Blog Post Free Content:</label><br/>
+    <textarea id="free_content" name="free_content">{{free_content}}</textarea><br/>
+    <label for="content">Blog Post Content:</label><br/>
+    <textarea id="content" name="content">{{content}}</textarea><br/>
+    <input type="submit" id="update_blog_post" value="Update Blog Post">
+</form>
+</p>

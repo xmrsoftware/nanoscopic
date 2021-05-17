@@ -17,7 +17,7 @@
 */
 
 import express from 'express'
-import { create_blog_post, list_all_blog_posts } from './post.sql.mjs'
+import {create_blog_post, get_blog_post, list_all_blog_posts, update_blog_post, delete_blog_post} from './post.sql.mjs'
 import { get_blog_id_from_user_id } from './../page/page.sql.mjs'
 import { check_if_logged_in } from './../../../utils.mjs'
 
@@ -74,6 +74,86 @@ router.post('/create/', (req, res) => {
     }).catch(error => {
         console.debug('Error creating blog post: ' + error.toString())
         res.status(500).send('Error creating blog post: ' + error.toString())
+    })
+})
+
+router.get('/show/:BlogID/:PostID/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    get_blog_post(req.session.user_id, req.params.PostID).then(results => {
+        res.render('cp/post/cp_display_post', {
+            title: results.blog_post_title,
+            header: results.blog_post_header,
+            content: results.blog_post_content,
+            slug: results.blog_post_url_slug,
+            meta_desc: results.blog_post_meta_description,
+            free_content: results.blog_post_free_content,
+            blog_id: req.params.BlogID,
+            post_id: req.params.PostID,
+            layout: 'cp',
+            logged_in: req.session.logged_in
+        })
+    }).catch(error => {
+        console.debug('Error showing blog post: ' + error.toString())
+        res.status(500).send('Error showing blog post: ' + error.toString())
+    })
+})
+
+router.get('/update/:BlogID/:PostID/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    get_blog_post(req.session.user_id, req.params.PostID).then(results => {
+        res.render('cp/post/cp_update_post', {
+            title: results.blog_post_title,
+            header: results.blog_post_header,
+            content: results.blog_post_content,
+            free_content: results.blog_post_free_content,
+            slug: results.blog_post_url_slug,
+            meta_desc: results.blog_post_meta_description,
+            blog_id: req.params.BlogID,
+            post_id: req.params.PostID,
+            layout: 'cp',
+            logged_in: req.session.logged_in
+        })
+    }).catch(error => {
+        console.debug('Error updating blog post: ' + error.toString())
+        res.status(500).send('Error updating blog post: ' + error.toString())
+    })
+})
+
+router.post('/update/:BlogID/:PostID/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    update_blog_post(req.session.user_id, req.params.PostID, req.body.title, req.body.content, req.body.meta_desc,
+        req.body.free_content, req.body.header, req.body.slug).then(results => {
+            res.redirect('/cp/post/')
+    }).catch(error => {
+        console.debug('Error updating blog post: ' + error.toString())
+        res.status(500).send('Error updating blog post: ' + error.toString())
+    })
+})
+
+router.get('/delete/confirm/:BlogID/:PostID/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    res.render('cp/page/cp_post_delete_confirm', {
+        title: 'Confirm deletion of post',
+        meta_desc: 'Confirm deletion of post',
+        layout: 'cp',
+        blog_id: req.params.BlogID,
+        post_id: req.params.PostID,
+        logged_in: req.session.logged_in
+    })
+})
+
+router.post('/delete/:BlogID/:PostID/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    delete_blog_post(req.session.user_id, req.params.PostID).then(results => {
+        res.redirect('/')
+    }).catch(error => {
+        console.debug('Error deleting blog post: ' + error.toString())
+        res.status(500).send('Error deleting blog post: ' + error.toString())
     })
 })
 

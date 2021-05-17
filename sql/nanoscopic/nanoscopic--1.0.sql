@@ -284,11 +284,9 @@ CREATE OR REPLACE PROCEDURE delete_blog_post(IN _blog_user_id BIGINT, IN _blog_p
         DELETE FROM blog_post WHERE blog_user_id = _blog_user_id AND blog_post_id = _blog_post_id;
     $$;
 
-CREATE OR REPLACE FUNCTION get_blog_post(IN _blog_user_id BIGINT, IN _blog_post_id BIGINT) RETURNS RECORD
+CREATE OR REPLACE FUNCTION get_blog_post(IN _blog_user_id BIGINT, IN _blog_post_id BIGINT) RETURNS blog_post
     LANGUAGE SQL AS $$
-        SELECT blog_id, blog_post_title, blog_post_header, blog_post_content, blog_post_views, blog_post_published,
-        blog_post_updated, blog_post_url_slug, blog_post_meta_description, blog_post_free_content FROM blog_post WHERE
-        blog_user_id = _blog_user_id AND blog_post_id = _blog_post_id;
+        SELECT * FROM blog_post WHERE blog_user_id = _blog_user_id AND blog_post_id = _blog_post_id;
     $$;
 
 CREATE OR REPLACE FUNCTION get_all_user_blog_posts(IN _blog_user_id BIGINT, IN _blog_id BIGINT) RETURNS TABLE
