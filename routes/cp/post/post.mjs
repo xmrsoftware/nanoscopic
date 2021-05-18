@@ -136,7 +136,7 @@ router.post('/update/:BlogID/:PostID/', (req, res) => {
 router.get('/delete/confirm/:BlogID/:PostID/', (req, res) => {
     check_if_logged_in(req, res)
 
-    res.render('cp/page/cp_post_delete_confirm', {
+    res.render('cp/post/cp_post_delete_confirm', {
         title: 'Confirm deletion of post',
         meta_desc: 'Confirm deletion of post',
         layout: 'cp',
