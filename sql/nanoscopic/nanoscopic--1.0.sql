@@ -52,13 +52,17 @@ CREATE TABLE blog_post (
     blog_post_updated TIMESTAMPTZ NOT NULL,
     blog_post_url_slug TEXT NOT NULL,
     blog_post_meta_description TEXT NOT NULL,
-    blog_post_free_content TEXT NOT NULL
+    blog_post_free_content TEXT NOT NULL,
+    blog_post_show_on_front_page BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE blog_post_comment (
     blog_post_comment_id BIGSERIAL PRIMARY KEY,
     blog_user_id BIGINT NOT NULL REFERENCES blog_user(blog_user_id),
     blog_post_id BIGINT NOT NULL REFERENCES blog_post(blog_post_id) ON DELETE CASCADE,
+    blog_id BIGINT NOT NULL REFERENCES blog(blog_id) ON DELETE CASCADE,
+    blog_post_comment_reply_to BIGINT REFERENCES blog_post_comment(blog_post_comment_id),
+    blog_post_comment_title TEXT NOT NULL,
     blog_post_comment_content TEXT NOT NULL,
     blog_post_comment_date_posted TIMESTAMPTZ NOT NULL,
     blog_post_comment_date_updated TIMESTAMPTZ NOT NULL,
@@ -73,7 +77,8 @@ CREATE TABLE blog_page (
     blog_page_header TEXT NOT NULL,
     blog_page_content TEXT NOT NULL,
     blog_page_meta_description TEXT NOT NULL,
-    blog_page_url_slug TEXT NOT NULL
+    blog_page_url_slug TEXT NOT NULL,
+    blog_page_show_on_front_page BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE blog_user_permissions (
@@ -301,5 +306,57 @@ CREATE OR REPLACE FUNCTION get_post_and_blog_detail(IN _blog_user_id BIGINT) RET
     (blog_id BIGINT, blog_title TEXT, blog_post_id BIGINT, blog_post_title TEXT)
     LANGUAGE SQL AS $$
         SELECT b.blog_id, b.blog_title, blog_post.blog_post_id, blog_post.blog_post_title FROM blog_post
-            INNER JOIN blog b on b.blog_id = blog_post.blog_id WHERE blog_post.blog_user_id = _blog_user_id;
+            INNER JOIN blog b ON b.blog_id = blog_post.blog_id WHERE blog_post.blog_user_id = _blog_user_id;
+    $$;
+
+CREATE OR REPLACE FUNCTION get_comments_for_post(IN _blog_post_id BIGINT) RETURNS TABLE
+    (blog_post_comment_id BIGINT, blog_user_id BIGINT, blog_post_id BIGINT, blog_post_comment_title TEXT,
+    blog_post_comment_content TEXT, blog_post_comment_date_posted TIMESTAMPTZ, blog_post_comment_updated TIMESTAMPTZ,
+    blog_post_comment_url_slug TEXT, blog_post_comment_reply_to BIGINT)
+    LANGUAGE SQL AS $$
+        SELECT * FROM blog_post_comment WHERE blog_post_comment.blog_post_id = _blog_post_id;
+    $$;
+
+CREATE OR REPLACE PROCEDURE create_comment(IN _blog_id BIGINT, IN _blog_user_id BIGINT, IN _blog_post_id BIGINT,
+    IN _blog_post_comment_content TEXT, IN _blog_post_comment_url_slug TEXT, IN _blog_post_comment_reply_to BIGINT,
+    IN _blog_post_comment_title TEXT)
+    LANGUAGE SQL AS $$
+        INSERT INTO blog_post_comment (blog_id, blog_user_id, blog_post_id, blog_post_comment_title,
+            blog_post_comment_content, blog_post_comment_url_slug, blog_post_comment_reply_to,
+            blog_post_comment_date_posted, blog_post_comment_date_updated) VALUES (_blog_id, _blog_user_id,
+            _blog_post_id, _blog_post_comment_title, _blog_post_comment_content, _blog_post_comment_url_slug,
+            _blog_post_comment_reply_to, current_timestamp, current_timestamp);
+    $$;
+
+CREATE OR REPLACE PROCEDURE update_comment(IN _blog_user_id BIGINT, IN _blog_post_comment_id BIGINT,
+    IN _blog_post_comment_content TEXT, IN _blog_post_comment_title TEXT)
+    LANGUAGE SQL AS $$
+        UPDATE blog_post_comment SET blog_post_comment_content = _blog_post_comment_content,
+        blog_post_comment_date_updated = current_timestamp, blog_post_comment_title = _blog_post_comment_title WHERE
+        blog_user_id = _blog_user_id AND blog_post_comment_id = _blog_post_comment_id;
+    $$;
+
+CREATE OR REPLACE PROCEDURE delete_comment(IN _blog_user_id BIGINT, IN _blog_post_comment_id BIGINT)
+    LANGUAGE SQL AS $$
+        DELETE FROM blog_post_comment WHERE blog_user_id = _blog_user_id AND
+        blog_post_comment_id = _blog_post_comment_id;
+    $$;
+
+CREATE OR REPLACE FUNCTION get_comments_on_blog_post(IN _blog_id BIGINT, IN _blog_user_id BIGINT, _blog_post_id BIGINT)
+    RETURNS TABLE
+    (blog_id BIGINT, blog_title TEXT, blog_post_id BIGINT, blog_post_title TEXT, blog_post_comment_id BIGINT,
+    blog_post_comment_title TEXT)
+    LANGUAGE SQL AS $$
+        SELECT b.blog_id, b.blog_title, bp.blog_post_id, bp.blog_post_title, bpc.blog_post_comment_id,
+        bpc.blog_post_comment_title FROM blog_post_comment JOIN blog_post bp ON bp.blog_id = blog_post_comment.blog_id
+        JOIN blog_post_comment bpc ON bpc.blog_post_id = bp.blog_post_id JOIN blog b ON b.blog_id = bp.blog_id WHERE
+        bpc.blog_post_id = _blog_post_id AND bp.blog_user_id = _blog_user_id AND b.blog_id = _blog_id;
+    $$;
+
+CREATE OR REPLACE FUNCTION get_latest_blog_posts() RETURNS TABLE
+    (blog_id BIGINT, blog_post_id BIGINT, blog_post_header TEXT, blog_post_free_content TEXT,
+    blog_post_date_published TIMESTAMPTZ)
+    LANGUAGE SQL AS $$
+        SELECT blog_id, blog_post_id, blog_post_header, blog_post_free_content, blog_post_date_published FROM blog_post
+        ORDER BY blog_post_date_published DESC LIMIT 100;
     $$;
