@@ -29,6 +29,9 @@ CREATE TABLE blog_user (
     blog_user_url_slug TEXT NOT NULL
 );
 
+SELECT pg_catalog.pg_extension_config_dump('blog_user', '');
+SELECT pg_catalog.pg_extension_config_dump('blog_user_blog_user_id_seq', '');
+
 CREATE TABLE blog (
     blog_id BIGSERIAL PRIMARY KEY,
     blog_user_id BIGINT NOT NULL REFERENCES blog_user(blog_user_id),
@@ -39,6 +42,9 @@ CREATE TABLE blog (
     blog_url_slug TEXT NOT NULL,
     blog_meta_description TEXT NOT NULL
 );
+
+SELECT pg_catalog.pg_extension_config_dump('blog', '');
+SELECT pg_catalog.pg_extension_config_dump('blog_blog_id_seq', '');
 
 CREATE TABLE blog_post (
     blog_post_id BIGSERIAL PRIMARY KEY,
@@ -56,6 +62,9 @@ CREATE TABLE blog_post (
     blog_post_show_on_front_page BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+SELECT pg_catalog.pg_extension_config_dump('blog_post', '');
+SELECT pg_catalog.pg_extension_config_dump('blog_post_blog_post_id_seq', '');
+
 CREATE TABLE blog_post_comment (
     blog_post_comment_id BIGSERIAL PRIMARY KEY,
     blog_user_id BIGINT NOT NULL REFERENCES blog_user(blog_user_id),
@@ -65,9 +74,11 @@ CREATE TABLE blog_post_comment (
     blog_post_comment_title TEXT NOT NULL,
     blog_post_comment_content TEXT NOT NULL,
     blog_post_comment_date_posted TIMESTAMPTZ NOT NULL,
-    blog_post_comment_date_updated TIMESTAMPTZ NOT NULL,
-    blog_post_comment_url_slug TEXT NOT NULL
+    blog_post_comment_date_updated TIMESTAMPTZ NOT NULL
 );
+
+SELECT pg_catalog.pg_extension_config_dump('blog_post_comment', '');
+SELECT pg_catalog.pg_extension_config_dump('blog_post_comment_blog_post_comment_id_seq', '');
 
 CREATE TABLE blog_page (
     blog_page_id BIGSERIAL PRIMARY KEY,
@@ -80,6 +91,9 @@ CREATE TABLE blog_page (
     blog_page_url_slug TEXT NOT NULL,
     blog_page_show_on_front_page BOOLEAN NOT NULL DEFAULT FALSE
 );
+
+SELECT pg_catalog.pg_extension_config_dump('blog_page', '');
+SELECT pg_catalog.pg_extension_config_dump('blog_page_blog_page_id_seq', '');
 
 CREATE TABLE blog_user_permissions (
     blog_user_permissions_id BIGSERIAL PRIMARY KEY,
@@ -95,6 +109,9 @@ CREATE TABLE blog_user_permissions (
     blog_user_permissions_can_upload_sound BOOLEAN NOT NULL DEFAULT FALSE,
     blog_user_permissions_is_moderator BOOLEAN NOT NULL DEFAULT FALSE
 );
+
+SELECT pg_catalog.pg_extension_config_dump('blog_user_permissions', '');
+SELECT pg_catalog.pg_extension_config_dump('blog_user_permissions_blog_user_permissions_id_seq', '');
 
 CREATE OR REPLACE PROCEDURE create_blog_user(IN _username TEXT, IN _email TEXT, IN _password TEXT, IN _salt UUID,
     IN _url_slug TEXT, IN _email_verification_code UUID)
@@ -312,19 +329,19 @@ CREATE OR REPLACE FUNCTION get_post_and_blog_detail(IN _blog_user_id BIGINT) RET
 CREATE OR REPLACE FUNCTION get_comments_for_post(IN _blog_post_id BIGINT) RETURNS TABLE
     (blog_post_comment_id BIGINT, blog_user_id BIGINT, blog_post_id BIGINT, blog_post_comment_title TEXT,
     blog_post_comment_content TEXT, blog_post_comment_date_posted TIMESTAMPTZ, blog_post_comment_updated TIMESTAMPTZ,
-    blog_post_comment_url_slug TEXT, blog_post_comment_reply_to BIGINT)
+    blog_post_comment_reply_to BIGINT)
     LANGUAGE SQL AS $$
         SELECT * FROM blog_post_comment WHERE blog_post_comment.blog_post_id = _blog_post_id;
     $$;
 
 CREATE OR REPLACE PROCEDURE create_comment(IN _blog_id BIGINT, IN _blog_user_id BIGINT, IN _blog_post_id BIGINT,
-    IN _blog_post_comment_content TEXT, IN _blog_post_comment_url_slug TEXT, IN _blog_post_comment_reply_to BIGINT,
+    IN _blog_post_comment_content TEXT, IN _blog_post_comment_reply_to BIGINT,
     IN _blog_post_comment_title TEXT)
     LANGUAGE SQL AS $$
         INSERT INTO blog_post_comment (blog_id, blog_user_id, blog_post_id, blog_post_comment_title,
-            blog_post_comment_content, blog_post_comment_url_slug, blog_post_comment_reply_to,
+            blog_post_comment_content, blog_post_comment_reply_to,
             blog_post_comment_date_posted, blog_post_comment_date_updated) VALUES (_blog_id, _blog_user_id,
-            _blog_post_id, _blog_post_comment_title, _blog_post_comment_content, _blog_post_comment_url_slug,
+            _blog_post_id, _blog_post_comment_title, _blog_post_comment_content,
             _blog_post_comment_reply_to, current_timestamp, current_timestamp);
     $$;
 
