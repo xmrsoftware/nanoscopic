@@ -26,7 +26,8 @@ import { router as user_routes } from './routes/user/user.mjs'
 import { router as cp_home } from './routes/cp/home.mjs'
 import { router as cp_blog_routes } from './routes/cp/blog/blog.mjs'
 import { router as cp_page_routes } from './routes/cp/page/page.mjs'
-import { router as cp_post_routes } from "./routes/cp/post/post.mjs"
+import { router as cp_post_routes } from './routes/cp/post/post.mjs'
+import { get_latest_blog_posts } from './app.sql.mjs';
 
 if (process.env.NODE_ENV !== 'production') {
     dotenv.config()
@@ -67,12 +68,16 @@ app.use('/cp/page/', cp_page_routes)
 app.use('/cp/post/', cp_post_routes)
 
 app.get('/', (req, res) => {
-    res.render('home', {
-        title: 'Nanoscopic - The small, efficient and ultra flexible open source blogging platform.',
-        meta_desc: 'Nanoscopic is a small and efficient blogging platform that is designed to allow bloggers to ' +
-            'charge what they want for their content so they do not have to rely on advertising or other forms of ' +
-            'revenue generation.',
-        logged_in: req.session.logged_in
+    get_latest_blog_posts().then(results => {
+        res.render('home', {
+            title: 'Nanoscopic Blog',
+            meta_desc: 'The Nanoscopic Blog homepage.',
+            blog_posts: results,
+            layout: 'main'
+        })
+    }).catch(error => {
+        console.debug('Unable to show home page: ' + error.toString())
+        res.status(500).send('Unable to show home page: ' + error.toString())
     })
 })
 

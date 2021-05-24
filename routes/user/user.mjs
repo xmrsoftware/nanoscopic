@@ -18,8 +18,10 @@
 
 import { v4 } from 'uuid'
 import express from 'express'
-import {create_user_object, get_user_id, check_user_password, get_user_salt} from './user.sql.mjs'
+import {create_user_object, get_user_id, check_user_password, get_user_salt, verify_email} from './user.sql.mjs'
+import {get_email_from_verification_code} from './user.sql.mjs';
 import {check_password_hash} from "./user_hashing.mjs";
+import {check_if_logged_in, send_verification_email} from "../../utils.mjs";
 
 const router = express.Router()
 
@@ -46,6 +48,7 @@ router.post('/register/', (req, res) => {
 
     create_user_object(req.body.username, req.body.email, req.body.password, v4(), v4()).then(() => {
         get_user_id(req.body.username).then(result => {
+            send_verification_email(req.body.email)
             req.session.username = req.body.username
             req.session.user_id = result.get_user_id_by_username
             req.session.logged_in = true
@@ -106,6 +109,30 @@ router.get('/logout/', (req, res) => {
     res.render('user/logout', {
         title: 'You have logged out of your Nanoscopic account',
         meta_desc: 'You have logged out of your Nanoscopic account.'
+    })
+})
+
+router.get('/verify/:VerificationCode/', (req, res) => {
+    check_if_logged_in(req, res)
+
+    get_email_from_verification_code(req.params.VerificationCode).then(email => {
+        verify_email(email.blog_user_email, req.params.VerificationCode).then(email_verified => {
+            res.redirect('/user/verify/complete/')
+        }).catch(error => {
+            console.debug('Unable to verify email: ' + error.toString())
+            res.status(500).send('Unable to verify email: ' + error.toString())
+        })
+    }).catch(error => {
+        console.debug('Unable to get email address: ' + error.toString())
+        res.status(500).send('Unable to get email address: ' + error.toString())
+    })
+})
+
+router.get('/verify/complete/', (req, res) => {
+    res.render('verify_complete', {
+        title: 'Verified email address on Nanoscopic',
+        meta_desc: 'You have successfully verified your email address',
+        layout: 'main'
     })
 })
 

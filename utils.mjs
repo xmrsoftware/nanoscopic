@@ -1,5 +1,8 @@
 'use strict';
 
+import nodemailer from 'nodemailer'
+import { db } from './sql.mjs'
+
 /*
    Copyright 2021 XMR VPS Ltd
 
@@ -22,4 +25,32 @@ function check_if_logged_in(req, res) {
     }
 }
 
-export {check_if_logged_in}
+function send_verification_email(email) {
+    const sql = 'SELECT * FROM get_email_verification_code_from_email($1);'
+    db.oneOrNone(sql, [email]).then(results => {
+        if (results === null || results === undefined) {
+            return
+        }
+
+        let transporter = nodemailer.createTransport({
+            host: process.env.NANOSCOPIC_SMTP_SERVER,
+            port: process.env.NANOSCOPIC_SMTP_PORT,
+            secure: process.env.NANOSCOPIC_SMTP_USE_TLS,
+            auth: {
+                user: process.env.NANOSCOPIC_SMTP_USER,
+                pass: process.env.NANOSCOPIC_SMTP_PASSWORD,
+            },
+        });
+
+        transporter.sendMail({
+            from: '"Nanoscopic Blog" <noreply@nanoscopic.blog>',
+            to: email,
+            subject: "Please verify your email address on Nanoscopic Blog",
+            text: "Please verify your email address by clicking the following link: " +
+                "https://www.nanoscopic.blog/user/verify/" + results.get_email_verification_code_from_email.toString()
+                + "/",
+        });
+    })
+}
+
+export {check_if_logged_in, send_verification_email}

@@ -15,3 +15,12 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+
+import { db } from './sql.mjs'
+
+async function get_latest_blog_posts() {
+    const sql = 'SELECT * FROM get_latest_blog_posts();'
+    return await db.manyOrNone(sql)
+}
+
+export {get_latest_blog_posts}

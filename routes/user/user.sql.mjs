@@ -42,4 +42,15 @@ async function get_user_id(username) {
     return await db.one(sql, [username])
 }
 
-export {get_user_salt, create_user_object, check_user_password, get_user_id}
+async function get_email_from_verification_code(verification_code) {
+    const sql = 'SELECT * FROM get_email_from_verification_code ($1);'
+    return await db.oneOrNone(sql, [verification_code])
+}
+
+async function verify_email(email, verification_code) {
+    const sql = 'CALL verify_email_address($1, $2);'
+    return await db.none(sql, [email, verification_code])
+}
+
+export {get_user_salt, create_user_object, check_user_password, get_user_id, verify_email,
+    get_email_from_verification_code}
