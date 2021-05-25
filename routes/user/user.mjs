@@ -112,11 +112,11 @@ router.get('/logout/', (req, res) => {
     })
 })
 
-router.get('/verify/:VerificationCode/', (req, res) => {
+router.get('/verify/email/:VerificationCode/', (req, res) => {
     check_if_logged_in(req, res)
 
     get_email_from_verification_code(req.params.VerificationCode).then(email => {
-        verify_email(email.blog_user_email, req.params.VerificationCode).then(email_verified => {
+        verify_email(email.get_email_from_verification_code, req.params.VerificationCode).then(() => {
             res.redirect('/user/verify/complete/')
         }).catch(error => {
             console.debug('Unable to verify email: ' + error.toString())

@@ -47,9 +47,11 @@ function send_verification_email(email) {
             to: email,
             subject: "Please verify your email address on Nanoscopic Blog",
             text: "Please verify your email address by clicking the following link: " +
-                "https://www.nanoscopic.blog/user/verify/" + results.get_email_verification_code_from_email.toString()
-                + "/",
+                "https://www.nanoscopic.blog/user/verify/email/" +
+                results.get_email_verification_code_from_email.toString() + "/",
         });
+    }).catch(error => {
+        console.debug('Unable to get verification code: ' + error.toString())
     })
 }
 
