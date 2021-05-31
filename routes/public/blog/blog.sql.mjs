@@ -16,16 +16,11 @@
    limitations under the License.
 */
 
-import { db } from './../../../sql.mjs'
+import { db } from '../../../sql.mjs'
 
-async function show_blog_post(user_id, post_id) {
-    const sql = 'SELECT * FROM get_blog_post($1, $2);'
-    return await db.oneOrNone(sql, [user_id, post_id])
+async function get_user_blog(blog_id, user_id) {
+    const sql = 'SELECT * FROM get_blog($1, $2);'
+    return await db.oneOrNone(sql, [blog_id, user_id])
 }
 
-async function get_username_from_user_id(user_id) {
-    const sql = 'SELECT * FROM get_username_by_userid($1);'
-    return await db.oneOrNone(sql, [user_id])
-}
-
-export {show_blog_post, get_username_from_user_id}
+export {get_user_blog}

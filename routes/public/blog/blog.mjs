@@ -16,16 +16,19 @@
    limitations under the License.
 */
 
-import { db } from './../../../sql.mjs'
+import express from 'express'
+import Markdown from 'markdown-it'
+import {get_user_blog} from './blog.sql.mjs'
 
-async function show_blog_post(user_id, post_id) {
-    const sql = 'SELECT * FROM get_blog_post($1, $2);'
-    return await db.oneOrNone(sql, [user_id, post_id])
-}
+const router = express.Router()
+const md = new Markdown()
 
-async function get_username_from_user_id(user_id) {
-    const sql = 'SELECT * FROM get_username_by_userid($1);'
-    return await db.oneOrNone(sql, [user_id])
-}
+router.get('/show/:BlogID/:UserID/:URLSlug/', (req, res) => {
+    get_user_blog(req.params.BlogID, req.params.UserID).then(results => {
+        res.render('blog/show_blog', {
+            logged_in: req.session.logged_in
+        })
+    })
+})
 
-export {show_blog_post, get_username_from_user_id}
+export {router}

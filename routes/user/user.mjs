@@ -19,9 +19,11 @@
 import { v4 } from 'uuid'
 import express from 'express'
 import {create_user_object, get_user_id, check_user_password, get_user_salt, verify_email} from './user.sql.mjs'
-import {get_email_from_verification_code} from './user.sql.mjs';
+import {get_email_from_verification_code, get_all_user_blogs} from './user.sql.mjs';
 import {check_password_hash} from "./user_hashing.mjs";
-import {check_if_logged_in, send_verification_email} from "../../utils.mjs";
+import {check_if_logged_in, send_verification_email, check_if_email_verified} from '../../utils.mjs'
+import {check_if_username_exists} from '../../utils.mjs';
+import {get_username_from_user_id} from "../public/post/post.sql.mjs";
 
 const router = express.Router()
 
@@ -36,7 +38,7 @@ router.get('/register/', (req, res) => {
         meta_desc: 'Register a Nanoscopic account so that you can comment and read all the blog posts contained on ' +
             'this blogging platform.',
         form_css: true,
-        logged_in: req.session.logged_in
+        layout: 'main'
     })
 })
 
@@ -52,7 +54,8 @@ router.post('/register/', (req, res) => {
             req.session.username = req.body.username
             req.session.user_id = result.get_user_id_by_username
             req.session.logged_in = true
-            res.redirect('/cp/')
+            req.session.verified_email = false
+            res.redirect('/user/verify/email/needed/')
         }).catch(error => {
             console.debug('Unable to get user_id ' + error.toString())
             res.status(500).send('Unable to get user_id ' + error.toString())
@@ -60,6 +63,14 @@ router.post('/register/', (req, res) => {
     }).catch(error => {
         console.debug('Error creating new user ' + error.toString())
         res.status(500).send('Error creating new user: ' + error.toString())
+    })
+})
+
+router.get('/verify/email/needed/', (req, res) => {
+    res.render('user/verify', {
+        title: 'Please verify your email address',
+        meta_desc: 'Please verify your email address on Nanoscopic Blog',
+        layout: 'main'
     })
 })
 
@@ -72,11 +83,15 @@ router.get('/login/', (req, res) => {
     res.render('user/login', {
         title: 'Login to your Nanoscopic blog account',
         meta_desc: 'Login to your Nanoscopic blog account.',
-        logged_in: req.session.logged_in
+        layout: 'main'
     })
 })
 
 router.post('/login/', (req, res) => {
+    if (check_if_username_exists(req.body.username) === false) {
+        res.status(500).send('Your entered username does not exist')
+    }
+
     check_user_password(req.body.username).then(db_salt_password_result => {
         const db_salted_password = db_salt_password_result.get_salt_password_by_username
         get_user_salt(req.body.username).then(user_salt_result => {
@@ -94,10 +109,16 @@ router.post('/login/', (req, res) => {
     })
 
     get_user_id(req.body.username).then(result => {
-        req.session.username = req.body.username
-        req.session.user_id = result.get_user_id_by_username
-        req.session.logged_in = true
-        res.redirect('/cp/')
+        check_if_email_verified(result.get_user_id_by_username).then(email => {
+            req.session.username = req.body.username
+            req.session.user_id = result.get_user_id_by_username
+            req.session.logged_in = true
+            req.session.verified_email = email.check_if_email_verified
+            res.redirect('/cp/')
+        }).catch(error => {
+            console.debug('Unable to find out if email verified: ' + error.toString())
+            res.status(500).send('Unable to find out if email verified: ' + error.toString())
+        })
     }).catch(error => {
         console.debug('Unable to get user_id: ' + error.toString())
         res.status(500).send('Unable to get user_id: ' + error.toString())
@@ -108,7 +129,8 @@ router.get('/logout/', (req, res) => {
     req.session = null
     res.render('user/logout', {
         title: 'You have logged out of your Nanoscopic account',
-        meta_desc: 'You have logged out of your Nanoscopic account.'
+        meta_desc: 'You have logged out of your Nanoscopic account.',
+        layout: 'main'
     })
 })
 
@@ -117,6 +139,7 @@ router.get('/verify/email/:VerificationCode/', (req, res) => {
 
     get_email_from_verification_code(req.params.VerificationCode).then(email => {
         verify_email(email.get_email_from_verification_code, req.params.VerificationCode).then(() => {
+            req.session.verified_email = true
             res.redirect('/user/verify/complete/')
         }).catch(error => {
             console.debug('Unable to verify email: ' + error.toString())
@@ -132,7 +155,29 @@ router.get('/verify/complete/', (req, res) => {
     res.render('verify_complete', {
         title: 'Verified email address on Nanoscopic',
         meta_desc: 'You have successfully verified your email address',
-        layout: 'main'
+        layout: 'main',
+        logged_in: req.session.logged_in
+    })
+})
+
+router.get('/profile/:UserID/', (req, res) => {
+    get_username_from_user_id(req.params.UserID).then(username_obj => {
+        get_all_user_blogs(req.params.UserID).then(results => {
+            res.render('user/profile', {
+                logged_in: req.session.logged_in,
+                layout: 'main',
+                title: 'List of blogs owned by ' + username_obj.username,
+                meta_desc: 'List of blogs owned by ' + username_obj.username,
+                author: username_obj.username,
+                blogs: results
+            })
+        }).catch(error => {
+            console.debug('Unable to get all user blogs: ' + error.toString())
+            res.status(500).send('Unable to get all user blogs: ' + error.toString())
+        })
+    }).catch(error => {
+        console.debug('Unable to get username from user_id: ' + error.toString())
+        res.status(500).send('Unable to get username from user_id: ' + error.toString())
     })
 })
 

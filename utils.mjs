@@ -1,8 +1,5 @@
 'use strict';
 
-import nodemailer from 'nodemailer'
-import { db } from './sql.mjs'
-
 /*
    Copyright 2021 XMR VPS Ltd
 
@@ -18,6 +15,9 @@ import { db } from './sql.mjs'
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+
+import nodemailer from 'nodemailer'
+import { db } from './sql.mjs'
 
 function check_if_logged_in(req, res) {
     if (req.session === null || req.session === undefined || req.session.logged_in !== true) {
@@ -55,4 +55,15 @@ function send_verification_email(email) {
     })
 }
 
-export {check_if_logged_in, send_verification_email}
+async function check_if_email_verified(user_id) {
+    const sql = 'SELECT * FROM check_if_email_verified($1);'
+    return await db.oneOrNone(sql, [user_id])
+}
+
+async function check_if_username_exists(username) {
+    const sql = 'SELECT * FROM check_if_username_exists($1);'
+    const returned_username = await db.oneOrNone(sql, [username])
+    return returned_username.check_if_username_exists === username
+}
+
+export {check_if_logged_in, send_verification_email, check_if_email_verified, check_if_username_exists}

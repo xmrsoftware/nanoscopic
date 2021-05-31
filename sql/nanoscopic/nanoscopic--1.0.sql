@@ -371,11 +371,11 @@ CREATE OR REPLACE FUNCTION get_comments_on_blog_post(IN _blog_id BIGINT, IN _blo
     $$;
 
 CREATE OR REPLACE FUNCTION get_latest_blog_posts() RETURNS TABLE
-    (blog_id BIGINT, blog_post_id BIGINT, blog_post_header TEXT, blog_post_free_content TEXT,
-    blog_post_published TIMESTAMPTZ)
+    (blog_id BIGINT, blog_post_id BIGINT, blog_user_id BIGINT, blog_post_header TEXT, blog_post_free_content TEXT,
+    blog_post_published TIMESTAMPTZ, blog_post_url_slug TEXT)
     LANGUAGE SQL AS $$
-        SELECT blog_id, blog_post_id, blog_post_header, blog_post_free_content, blog_post_published FROM blog_post
-        ORDER BY blog_post_published DESC LIMIT 100;
+        SELECT blog_id, blog_post_id, blog_user_id, blog_post_header, blog_post_free_content, blog_post_published,
+        blog_post_url_slug FROM blog_post ORDER BY blog_post_published DESC LIMIT 100;
     $$;
 
 CREATE OR REPLACE FUNCTION get_email_verification_code_from_email(IN _email TEXT) RETURNS UUID
@@ -393,4 +393,14 @@ CREATE OR REPLACE PROCEDURE verify_email_address(IN _email TEXT, IN _verificatio
 CREATE OR REPLACE FUNCTION get_email_from_verification_code(IN _verification_code UUID) RETURNS TEXT
     LANGUAGE SQL AS $$
         SELECT blog_user_email FROM blog_user WHERE blog_user_email_verification_code = _verification_code;
+    $$;
+
+CREATE OR REPLACE FUNCTION check_if_email_verified(IN _user_id BIGINT) RETURNS BOOLEAN
+    LANGUAGE SQL AS $$
+        SELECT blog_user_email_verified FROM blog_user WHERE blog_user_id = _user_id;
+    $$;
+
+CREATE OR REPLACE FUNCTION check_if_username_exists(IN _username TEXT) RETURNS TEXT
+    LANGUAGE SQL AS $$
+        SELECT blog_user_username FROM blog_user WHERE blog_user_username = _username;
     $$;

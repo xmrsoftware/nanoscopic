@@ -1,0 +1,15 @@
+<h1>{{title}}</h1>
+<p>
+    List of blogs owned by {{author}}:
+</p>
+{{#if blogs}}
+    {{#each blogs}}
+        <p>
+
+        </p>
+    {{/each}}
+{{else}}
+    <p>
+        {{author}} does not have any blogs yet.
+    </p>
+{{/if}}

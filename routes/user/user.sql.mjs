@@ -52,5 +52,10 @@ async function verify_email(email, verification_code) {
     return await db.none(sql, [email, verification_code])
 }
 
+async function get_all_user_blogs(user_id) {
+    const sql = 'SELECT * FROM get_all_user_blogs($1);'
+    return await db.manyOrNone(sql, [user_id])
+}
+
 export {get_user_salt, create_user_object, check_user_password, get_user_id, verify_email,
-    get_email_from_verification_code}
+    get_email_from_verification_code, get_all_user_blogs}

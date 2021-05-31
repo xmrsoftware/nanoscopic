@@ -1,11 +1,12 @@
 <header>
     {{#if logged_in}}
         <p>
-            | <a href="/cp/">Control Panel</a> | <a href="/user/logout/">Logout</a> |
+            | <a href="/">Home</a> | <a href="/cp/">Control Panel</a> | <a href="/user/logout/">Logout</a> |
         </p>
     {{else}}
         <p>
-            | <a href="/user/register/">Register an Account</a> | <a href="/user/login/">Login</a> |
+           | <a href="/">Home</a> | <a href="/user/register/">Register an Account</a> |
+            <a href="/user/login/">Login</a> |
         </p>
     {{/if}}
 </header>

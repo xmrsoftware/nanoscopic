@@ -17,11 +17,13 @@
 */
 
 import express from 'express'
+import Markdown from 'markdown-it'
 import {create_blog_post, get_blog_post, list_all_blog_posts, update_blog_post, delete_blog_post} from './post.sql.mjs'
-import { get_blog_id_from_user_id } from './../page/page.sql.mjs'
-import { check_if_logged_in } from './../../../utils.mjs'
+import {get_blog_id_from_user_id} from './../page/page.sql.mjs'
+import {check_if_logged_in} from './../../../utils.mjs'
 
 const router = express.Router()
+const md = new Markdown()
 
 router.get('/', (req, res) => {
     check_if_logged_in(req, res)
@@ -83,11 +85,11 @@ router.get('/show/:BlogID/:PostID/', (req, res) => {
     get_blog_post(req.session.user_id, req.params.PostID).then(results => {
         res.render('cp/post/cp_display_post', {
             title: results.blog_post_title,
-            header: results.blog_post_header,
-            content: results.blog_post_content,
+            header: md.render(results.blog_post_header),
+            content: md.render(results.blog_post_content),
             slug: results.blog_post_url_slug,
             meta_desc: results.blog_post_meta_description,
-            free_content: results.blog_post_free_content,
+            free_content: md.render(results.blog_post_free_content),
             blog_id: req.params.BlogID,
             post_id: req.params.PostID,
             layout: 'cp',

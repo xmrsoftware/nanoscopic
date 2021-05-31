@@ -27,6 +27,8 @@ import { router as cp_home } from './routes/cp/home.mjs'
 import { router as cp_blog_routes } from './routes/cp/blog/blog.mjs'
 import { router as cp_page_routes } from './routes/cp/page/page.mjs'
 import { router as cp_post_routes } from './routes/cp/post/post.mjs'
+import { router as post_routes } from './routes/public/post/post.mjs'
+import { router as blog_routes } from './routes/public/blog/blog.mjs'
 import { get_latest_blog_posts } from './app.sql.mjs';
 
 if (process.env.NODE_ENV !== 'production') {
@@ -62,6 +64,8 @@ app.enable('view cache')
 
 // load route modules
 app.use('/user/', user_routes)
+app.use('/post/', post_routes)
+app.use('/blog/', blog_routes)
 app.use('/cp/', cp_home)
 app.use('/cp/blog/', cp_blog_routes)
 app.use('/cp/page/', cp_page_routes)
@@ -73,7 +77,8 @@ app.get('/', (req, res) => {
             title: 'Nanoscopic Blog',
             meta_desc: 'The Nanoscopic Blog homepage.',
             blog_posts: results,
-            layout: 'main'
+            layout: 'main',
+            logged_in: req.session.logged_in
         })
     }).catch(error => {
         console.debug('Unable to show home page: ' + error.toString())
