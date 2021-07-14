@@ -38,6 +38,7 @@ router.get('/', (req, res) => {
             meta_desc: 'List of all of your blog posts.',
             layout: 'cp',
             blog_posts: result,
+            user_id: req.session.user_id,
             logged_in: req.session.logged_in
         })
     }).catch(error => {
@@ -59,7 +60,8 @@ router.get('/create/', (req, res) => {
             meta_desc: 'Create a blog post',
             layout: 'cp',
             blog_list: result,
-            logged_in: req.session.logged_in
+            logged_in: req.session.logged_in,
+            user_id: req.session.user_id
         })
     }).catch(error => {
         console.debug('Unable to create a blog post: ' + error.toString())

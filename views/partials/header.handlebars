@@ -1,7 +1,8 @@
 <header>
     {{#if logged_in}}
         <p>
-            | <a href="/">Home</a> | <a href="/cp/">Control Panel</a> | <a href="/user/logout/">Logout</a> |
+            | <a href="/">Home</a> | <a href="/cp/">Control Panel</a> | <a href="/user/profile/{{user_id}}/">Profile</a>
+            | <a href="/user/logout/">Logout</a> |
         </p>
     {{else}}
         <p>

@@ -26,7 +26,7 @@ const md = new Markdown()
 router.get('/show/:UserID/:PostID/:URLSlug/', (req, res) => {
     show_blog_post(req.params.UserID, req.params.PostID).then(result => {
         get_username_from_user_id(req.params.UserID).then(username_obj => {
-            res.render('post/show_blog_post', {
+            res.render('public/post/show_blog_post', {
                 logged_in: req.session.logged_in,
                 author: username_obj.username,
                 title: result.blog_post_title,
@@ -36,6 +36,7 @@ router.get('/show/:UserID/:PostID/:URLSlug/', (req, res) => {
                 date_updated: result.blog_post_updated,
                 free_content: md.render(result.blog_post_free_content),
                 meta_desc: result.blog_post_meta_description,
+                user_id: req.session.user_id,
                 layout: 'main'
             })
         })

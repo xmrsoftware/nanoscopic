@@ -22,6 +22,7 @@ import {create_user_object, get_user_id, check_user_password, get_user_salt, ver
 import {get_email_from_verification_code, get_all_user_blogs} from './user.sql.mjs';
 import {check_password_hash} from "./user_hashing.mjs";
 import {check_if_logged_in, send_verification_email, check_if_email_verified} from '../../utils.mjs'
+import {check_if_user_id_equals_logged_in_user} from '../../utils.mjs';
 import {check_if_username_exists} from '../../utils.mjs';
 import {get_username_from_user_id} from "../public/post/post.sql.mjs";
 
@@ -169,7 +170,9 @@ router.get('/profile/:UserID/', (req, res) => {
                 title: 'List of blogs owned by ' + username_obj.username,
                 meta_desc: 'List of blogs owned by ' + username_obj.username,
                 author: username_obj.username,
-                blogs: results
+                blogs: results,
+                user_id: req.params.UserID,
+                can_see_private: check_if_user_id_equals_logged_in_user(req.session.user_id, req.params.UserID)
             })
         }).catch(error => {
             console.debug('Unable to get all user blogs: ' + error.toString())

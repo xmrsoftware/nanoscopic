@@ -78,7 +78,8 @@ app.get('/', (req, res) => {
             meta_desc: 'The Nanoscopic Blog homepage.',
             blog_posts: results,
             layout: 'main',
-            logged_in: req.session.logged_in
+            logged_in: req.session.logged_in,
+            user_id: req.session.user_id
         })
     }).catch(error => {
         console.debug('Unable to show home page: ' + error.toString())

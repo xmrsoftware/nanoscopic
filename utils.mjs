@@ -25,6 +25,10 @@ function check_if_logged_in(req, res) {
     }
 }
 
+function check_if_user_id_equals_logged_in_user(logged_in_user_id, user_id) {
+    return logged_in_user_id === user_id;
+}
+
 function send_verification_email(email) {
     const sql = 'SELECT * FROM get_email_verification_code_from_email($1);'
     db.oneOrNone(sql, [email]).then(results => {
@@ -66,4 +70,5 @@ async function check_if_username_exists(username) {
     return returned_username.check_if_username_exists === username
 }
 
-export {check_if_logged_in, send_verification_email, check_if_email_verified, check_if_username_exists}
+export {check_if_logged_in, send_verification_email, check_if_email_verified, check_if_username_exists,
+    check_if_user_id_equals_logged_in_user}

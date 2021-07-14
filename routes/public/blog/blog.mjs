@@ -23,10 +23,11 @@ import {get_user_blog} from './blog.sql.mjs'
 const router = express.Router()
 const md = new Markdown()
 
-router.get('/show/:BlogID/:UserID/:URLSlug/', (req, res) => {
+router.get('/show/:UserID/:BlogID/:URLSlug/', (req, res) => {
     get_user_blog(req.params.BlogID, req.params.UserID).then(results => {
-        res.render('blog/show_blog', {
-            logged_in: req.session.logged_in
+        res.render('public/blog/show_blog', {
+            logged_in: req.session.logged_in,
+            user_id: req.session.user_id
         })
     })
 })
