@@ -18,7 +18,7 @@
 
 import express from 'express'
 import Markdown from 'markdown-it'
-import { show_blog_post, get_username_from_user_id } from './post.sql.mjs'
+import {show_blog_post, get_username_from_user_id, get_latest_ten_blog_posts} from './post.sql.mjs'
 
 const router = express.Router()
 const md = new Markdown()
@@ -37,8 +37,22 @@ router.get('/show/:UserID/:PostID/:URLSlug/', (req, res) => {
                 free_content: md.render(result.blog_post_free_content),
                 meta_desc: result.blog_post_meta_description,
                 user_id: req.session.user_id,
+                author_user_id: req.params.UserID,
                 layout: 'main'
             })
+        })
+    })
+})
+
+router.get('/:UserID/:BlogID/latest/', (req, res) => {
+    get_latest_ten_blog_posts(req.params.BlogID, req.params.UserID).then(results => {
+        res.render('public/post/show_blog_post_list', {
+            logged_in: req.session.logged_in,
+            layout: 'main',
+            blog_post_header: results.blog_post_header,
+            blog_post_published: results.blog_post_published,
+            blog_post_id: results.blog_post_id,
+            blog_posts: results
         })
     })
 })

@@ -135,13 +135,12 @@ CREATE OR REPLACE FUNCTION get_username_by_userid(IN _user_id BIGINT, OUT userna
     $$;
 
 CREATE OR REPLACE FUNCTION get_latest_ten_blog_posts(IN _blog_id BIGINT, IN _user_id BIGINT)
-    RETURNS TABLE (blog_post_id BIGINT, blog_user_id BIGINT, blog_id BIGINT, blog_post_title TEXT,
-        blog_post_header TEXT, blog_post_content TEXT, blog_post_published TIMESTAMPTZ, blog_post_updated TIMESTAMPTZ,
-        blog_post_url_slug TEXT)
+    RETURNS TABLE (blog_post_id BIGINT, blog_user_id BIGINT, blog_id BIGINT, blog_post_header TEXT,
+    blog_post_free_content TEXT, blog_post_published TIMESTAMPTZ, blog_post_url_slug TEXT)
     LANGUAGE SQL AS $$
-        SELECT (blog_post.blog_post_id, blog_post.blog_user_id, blog_post.blog_id, blog_post.blog_post_title,
-                blog_post.blog_post_header, blog_post.blog_post_content, blog_post.blog_post_published,
-                blog_post.blog_post_updated, blog_post.blog_post_url_slug) FROM blog_post
+        SELECT (blog_post.blog_post_id, blog_post.blog_user_id, blog_post.blog_id,
+                blog_post.blog_post_header, blog_post.blog_post_free_content, blog_post.blog_post_published,
+                blog_post.blog_post_url_slug) FROM blog_post
         WHERE blog_post.blog_id = _blog_id AND blog_post.blog_user_id = _user_id ORDER BY blog_post_published
             DESC LIMIT 10;
     $$;

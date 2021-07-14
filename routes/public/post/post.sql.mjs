@@ -28,4 +28,9 @@ async function get_username_from_user_id(user_id) {
     return await db.oneOrNone(sql, [user_id])
 }
 
-export {show_blog_post, get_username_from_user_id}
+async function get_latest_ten_blog_posts(blog_id, user_id) {
+    const sql = 'SELECT * FROM get_latest_ten_blog_posts($1, $2);'
+    return await db.manyOrNone(sql, [blog_id, user_id])
+}
+
+export {show_blog_post, get_username_from_user_id, get_latest_ten_blog_posts}

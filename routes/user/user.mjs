@@ -171,6 +171,7 @@ router.get('/profile/:UserID/', (req, res) => {
                 meta_desc: 'List of blogs owned by ' + username_obj.username,
                 author: username_obj.username,
                 blogs: results,
+                // FIXME: Add author here so that meta info up to date
                 user_id: req.params.UserID,
                 can_see_private: check_if_user_id_equals_logged_in_user(req.session.user_id, req.params.UserID)
             })

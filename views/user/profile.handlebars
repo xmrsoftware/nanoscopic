@@ -1,11 +1,8 @@
 <h1>{{title}}</h1>
-<p>
-    List of blogs owned by {{author}}:
-</p>
 {{#if blogs}}
     {{#each blogs}}
         <p>
-
+            <a href="/blog/show/{{blog_user_id}}/{{blog_id}}/{{blog_url_slug}}/">{{blog_title}}</a>
         </p>
     {{/each}}
 {{else}}
