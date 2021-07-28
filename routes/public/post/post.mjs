@@ -49,10 +49,9 @@ router.get('/:UserID/:BlogID/latest/', (req, res) => {
         res.render('public/post/show_blog_post_list', {
             logged_in: req.session.logged_in,
             layout: 'main',
-            blog_post_header: results.blog_post_header,
-            blog_post_published: results.blog_post_published,
-            blog_post_id: results.blog_post_id,
-            blog_posts: results
+            blog_posts: results,
+            blog_post_user_id: req.params.UserID,
+            blog_post_blog_id: req.params.BlogID
         })
     })
 })

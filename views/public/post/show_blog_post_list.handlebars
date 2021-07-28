@@ -13,5 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-
-<h1>{{{blog_post_header}}}</h1>
+<h1>List of Latest Blog Posts</h1>
+{{# each blog_posts}}
+    <h2>{{{blog_post_header}}}</h2>
+    <p>
+        {{blog_post_published}}
+    </p>
+    <p>
+        {{{blog_post_free_content}}}
+    </p>
+    <p>
+        <a href="/post/show/{{blog_user_id}}/{{blog_post_id}}/{{blog_post_url_slug}}/">Read More</a>.
+    </p>
+{{/each}}
